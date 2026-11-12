@@ -2,6 +2,8 @@
 
 An interactive, single-file 3D web application built with **Three.js** designed to teach someone with zero background in American Football everything they need to know to understand and appreciate the game.
 
+![Football 101 Animated Walkthrough](screenshots/football-101-demo.gif)
+
 ## Prompt & Generation
 
 Created using **Gemini 4 Carbon** in **less than 2 minutes** with a single prompt:
@@ -20,6 +22,12 @@ Created using **Gemini 4 Carbon** in **less than 2 minutes** with a single promp
 
 ### Step 3: The Secret of Football — 4 Tries ("Downs") for 10 Yards
 ![Step 3: The 4-Tries Rule](screenshots/step3-four-tries.png)
+
+### Step 4: How Points Work (6, 7, 8, or 3)
+![Step 4: How You Score](screenshots/step4-scoring.png)
+
+### Step 5: The 11 vs. 11 Player Jobs (3 Simple Layers)
+![Step 5: Player Jobs](screenshots/step5-players.png)
 
 ### Step 6: Live Drive Simulator with Plain-English TV Scorebar Decoder
 ![Step 6: Play a Live Drive](screenshots/step6-live-drive.png)
