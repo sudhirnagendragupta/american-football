@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Football 101 — Interactive 3D Guide to American Football</title>
+    <title>Football 101 — Zero-to-Fan Interactive 3D Guide</title>
     <style>
       :root {
-        --bg-dark: rgba(10, 15, 28, 0.86);
-        --bg-card: rgba(20, 29, 49, 0.9);
+        --bg-dark: rgba(10, 15, 28, 0.88);
+        --bg-card: rgba(20, 29, 49, 0.92);
         --border: rgba(255, 255, 255, 0.14);
         --accent-blue: #3b82f6;
         --accent-red: #ef4444;
@@ -15,6 +15,8 @@
         --accent-green: #22c55e;
         --text-main: #f8fafc;
         --text-muted: #94a3b8;
+        --scrollbar-thumb: rgba(148, 163, 184, 0.35);
+        --scrollbar-track: rgba(15, 23, 42, 0.4);
       }
 
       * {
@@ -35,28 +37,45 @@
         height: 100vh;
       }
 
+      /* Balanced headings & pretty body copy per modern-web-guidance */
+      h1,
+      h2,
+      h3,
+      .panel-title,
+      #banner h2 {
+        text-wrap: balance;
+      }
+
+      .panel-desc,
+      .info-card p,
+      .coach-box,
+      .analogy-box p,
+      .plain-translation {
+        text-wrap: pretty;
+      }
+
       #canvas-container {
         position: fixed;
         inset: 0;
         z-index: 1;
       }
 
-      /* Top Navigation Bar */
+      /* Top Navigation Bar (6 Progressive Beginner Steps) */
       header {
         position: fixed;
-        top: 14px;
+        top: 12px;
         left: 16px;
         right: 16px;
         z-index: 20;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: 10px;
         background: var(--bg-dark);
         backdrop-filter: blur(14px);
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 10px 18px;
+        padding: 9px 16px;
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
         flex-wrap: wrap;
       }
@@ -79,19 +98,19 @@
         font-size: 11px;
         letter-spacing: 1px;
         color: #fff;
-        transform: rotate(-15deg);
+        rotate: -15deg;
       }
 
       .brand h1 {
-        font-size: 1.05rem;
+        font-size: 1rem;
         font-weight: 800;
-        letter-spacing: 0.4px;
+        letter-spacing: 0.3px;
         text-transform: uppercase;
       }
 
       .brand span {
         display: block;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         color: var(--text-muted);
         font-weight: 500;
         text-transform: none;
@@ -99,7 +118,7 @@
 
       .nav-tabs {
         display: flex;
-        gap: 6px;
+        gap: 5px;
         flex-wrap: wrap;
       }
 
@@ -107,12 +126,15 @@
         background: rgba(255, 255, 255, 0.06);
         color: var(--text-muted);
         border: 1px solid transparent;
-        padding: 8px 14px;
+        padding: 7px 11px;
         border-radius: 9px;
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease,
+          border-color 0.2s ease;
       }
 
       .tab-btn:hover {
@@ -123,21 +145,21 @@
       .tab-btn.active {
         background: var(--accent-blue);
         color: #fff;
-        border-color: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.28);
         box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
       }
 
       /* Camera Bar */
       .camera-bar {
         position: fixed;
-        top: 82px;
+        top: 76px;
         right: 16px;
         z-index: 20;
         display: flex;
-        gap: 6px;
+        gap: 5px;
         background: var(--bg-dark);
         backdrop-filter: blur(12px);
-        padding: 6px;
+        padding: 5px;
         border-radius: 10px;
         border: 1px solid var(--border);
       }
@@ -148,7 +170,7 @@
         border: none;
         padding: 6px 10px;
         border-radius: 7px;
-        font-size: 0.75rem;
+        font-size: 0.74rem;
         font-weight: 600;
         cursor: pointer;
         transition: 0.18s;
@@ -163,10 +185,10 @@
       /* Left Side Lesson Panel */
       .side-panel {
         position: fixed;
-        top: 82px;
+        top: 76px;
         left: 16px;
-        width: 360px;
-        max-height: calc(100vh - 190px);
+        width: 390px;
+        max-height: calc(100vh - 180px);
         overflow-y: auto;
         z-index: 20;
         background: var(--bg-dark);
@@ -174,15 +196,30 @@
         border: 1px solid var(--border);
         border-radius: 14px;
         padding: 18px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
       }
 
-      .side-panel::-webkit-scrollbar {
-        width: 6px;
+      @supports not (scrollbar-color: auto) {
+        .side-panel::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .side-panel::-webkit-scrollbar-thumb {
+          background: var(--scrollbar-thumb);
+          border-radius: 4px;
+        }
+        .side-panel::-webkit-scrollbar-track {
+          background: var(--scrollbar-track);
+        }
       }
-      .side-panel::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 3px;
+
+      .step-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
       }
 
       .module-tag {
@@ -190,33 +227,77 @@
         font-size: 0.68rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        padding: 3px 8px;
+        letter-spacing: 0.8px;
+        padding: 3px 9px;
         border-radius: 5px;
-        background: rgba(59, 130, 246, 0.2);
-        color: #60a5fa;
-        margin-bottom: 8px;
+        background: rgba(59, 130, 246, 0.22);
+        color: #93c5fd;
+      }
+
+      .progress-dots {
+        display: flex;
+        gap: 5px;
+      }
+
+      .progress-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .progress-dot.active {
+        background: var(--accent-gold);
+        box-shadow: 0 0 8px var(--accent-gold);
+      }
+
+      .progress-dot.done {
+        background: var(--accent-blue);
       }
 
       .panel-title {
-        font-size: 1.2rem;
+        font-size: 1.18rem;
         font-weight: 800;
         margin-bottom: 8px;
         line-height: 1.25;
       }
 
       .panel-desc {
-        font-size: 0.86rem;
+        font-size: 0.85rem;
         line-height: 1.55;
         color: #cbd5e1;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
+      }
+
+      .analogy-box {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        border-left: 4px solid var(--accent-green);
+        border-radius: 9px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+      }
+
+      .analogy-box > strong {
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #86efac;
+        margin-bottom: 3px;
+      }
+
+      .analogy-box p {
+        font-size: 0.81rem;
+        line-height: 1.45;
+        color: #e2e8f0;
       }
 
       .info-grid {
         display: flex;
         flex-direction: column;
         gap: 8px;
-        margin-top: 10px;
+        margin-top: 8px;
       }
 
       .info-card {
@@ -225,37 +306,50 @@
         border-radius: 10px;
         padding: 11px 13px;
         cursor: pointer;
-        transition: all 0.18s ease;
+        translate: 0px 0px;
+        scale: 1;
+        transition:
+          border-color 0.18s ease,
+          background-color 0.18s ease,
+          translate 0.18s ease;
       }
 
       .info-card:hover {
-        border-color: rgba(96, 165, 250, 0.6);
-        transform: translateX(3px);
+        border-color: rgba(96, 165, 250, 0.65);
+        translate: 3px 0px;
+      }
+
+      @supports not (translate: 0px) {
+        .info-card:hover {
+          transform: translateX(3px);
+        }
       }
 
       .info-card.selected {
         border-color: var(--accent-gold);
-        background: rgba(250, 204, 21, 0.1);
+        background: rgba(250, 204, 21, 0.11);
       }
 
       .info-card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 8px;
         margin-bottom: 4px;
       }
 
       .info-card-title {
         font-weight: 700;
-        font-size: 0.88rem;
+        font-size: 0.87rem;
         color: #fff;
       }
 
       .badge {
-        font-size: 0.72rem;
+        font-size: 0.69rem;
         font-weight: 800;
         padding: 2px 7px;
         border-radius: 6px;
+        white-space: nowrap;
       }
 
       .badge-gold {
@@ -276,22 +370,76 @@
       }
 
       .info-card p {
-        font-size: 0.8rem;
-        color: var(--text-muted);
+        font-size: 0.79rem;
+        color: #cbd5e1;
         line-height: 1.45;
+      }
+
+      .action-demo-btn {
+        margin-top: 7px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+        background: rgba(250, 204, 21, 0.14);
+        border: 1px solid rgba(250, 204, 21, 0.35);
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .action-demo-btn:hover {
+        background: rgba(250, 204, 21, 0.25);
+      }
+
+      /* Layer filter buttons for Step 5 (Players) */
+      .layer-switcher {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .layer-btn {
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        text-align: left;
+        transition: 0.15s;
+      }
+
+      .layer-btn span {
+        display: block;
+        font-size: 0.67rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .layer-btn.active {
+        background: rgba(59, 130, 246, 0.25);
+        border-color: var(--accent-gold);
+        color: #fff;
       }
 
       .position-pills {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 12px;
+        gap: 5px;
+        margin-bottom: 10px;
       }
 
       .pos-pill {
-        padding: 5px 10px;
+        padding: 5px 9px;
         border-radius: 7px;
-        font-size: 0.76rem;
+        font-size: 0.74rem;
         font-weight: 700;
         cursor: pointer;
         border: 1px solid var(--border);
@@ -312,18 +460,119 @@
         border-color: var(--accent-gold);
       }
 
+      /* Guided Step Footer Buttons (Prev / Next) */
+      .step-nav-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+      }
+
+      .step-nav-btn {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        border: 1px solid var(--border);
+        padding: 8px 13px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.18s;
+      }
+
+      .step-nav-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .step-nav-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      .step-nav-btn.primary {
+        background: var(--accent-blue);
+        border-color: rgba(255, 255, 255, 0.25);
+        flex: 1;
+        text-align: center;
+      }
+
+      .step-nav-btn.primary:hover {
+        background: #2563eb;
+      }
+
+      /* Beginner Down Tracker Widget (Used in Step 3 & Step 6) */
+      .down-dots-box {
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(250, 204, 21, 0.35);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+      }
+
+      .down-dots-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--accent-gold);
+        margin-bottom: 6px;
+      }
+
+      .down-pills-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+
+      .down-pill {
+        text-align: center;
+        padding: 5px 4px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+        border: 1px solid transparent;
+      }
+
+      .down-pill.used {
+        background: rgba(148, 163, 184, 0.12);
+        color: #64748b;
+        text-decoration: line-through;
+      }
+
+      .down-pill.current {
+        background: rgba(250, 204, 21, 0.22);
+        color: var(--accent-gold);
+        border-color: var(--accent-gold);
+      }
+
       /* TV Broadcast Scorebug & Play Bar (Bottom) */
       .broadcast-bar {
         position: fixed;
-        bottom: 16px;
+        bottom: 14px;
         left: 50%;
-        transform: translateX(-50%);
+        translate: -50% 0;
         z-index: 20;
-        display: flex;
+        display: none;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
-        width: min(820px, calc(100vw - 32px));
+        gap: 8px;
+        width: min(840px, calc(100vw - 32px));
+      }
+
+      @supports not (translate: 0px) {
+        .broadcast-bar {
+          transform: translateX(-50%);
+        }
+      }
+
+      .broadcast-bar.visible {
+        display: flex;
       }
 
       .play-controls {
@@ -344,19 +593,25 @@
       }
 
       .play-btn {
+        position: relative;
         background: linear-gradient(180deg, #1e293b, #0f172a);
         color: #fff;
         border: 1px solid rgba(255, 255, 255, 0.18);
-        padding: 8px 14px;
+        padding: 8px 13px;
         border-radius: 9px;
-        font-size: 0.8rem;
+        font-size: 0.79rem;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.18s;
+        translate: 0px 0px;
+        scale: 1;
+        transition:
+          border-color 0.18s ease,
+          background-color 0.18s ease,
+          translate 0.18s ease;
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-width: 112px;
+        min-width: 115px;
       }
 
       .play-btn span {
@@ -368,8 +623,14 @@
 
       .play-btn:hover:not(:disabled) {
         border-color: var(--accent-gold);
-        transform: translateY(-2px);
+        translate: 0px -2px;
         background: #1e3a8a;
+      }
+
+      @supports not (translate: 0px) {
+        .play-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+        }
       }
 
       .play-btn:disabled {
@@ -377,8 +638,30 @@
         cursor: not-allowed;
       }
 
-      .play-btn.special {
-        border-color: rgba(250, 204, 21, 0.4);
+      .play-btn.recommended {
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 14px rgba(250, 204, 21, 0.35);
+      }
+
+      .rec-tag {
+        position: absolute;
+        top: -9px;
+        background: var(--accent-gold);
+        color: #0f172a;
+        font-size: 0.58rem;
+        font-weight: 900;
+        padding: 1px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      .scorebug-wrapper {
+        width: 100%;
+        max-width: 720px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
       }
 
       .scorebug {
@@ -390,24 +673,23 @@
           #1e293b 50%,
           #0f172a 100%
         );
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.22);
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
         width: 100%;
-        max-width: 680px;
-        height: 52px;
+        height: 50px;
       }
 
       .sb-team {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 16px;
+        padding: 0 15px;
         height: 100%;
         font-weight: 800;
-        font-size: 0.95rem;
-        min-width: 135px;
+        font-size: 0.88rem;
+        min-width: 145px;
       }
 
       .sb-you {
@@ -419,29 +701,43 @@
       }
 
       .sb-score {
-        font-size: 1.35rem;
+        font-size: 1.3rem;
         font-weight: 900;
-        margin-left: 12px;
+        margin-left: 10px;
       }
 
       .sb-situation {
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-around;
-        padding: 0 14px;
+        justify-content: center;
+        padding: 0 12px;
         font-weight: 800;
+      }
+
+      .sb-top-line {
+        display: flex;
+        gap: 14px;
+        align-items: center;
       }
 
       .sb-down {
         color: var(--accent-gold);
-        font-size: 1rem;
-        letter-spacing: 0.5px;
+        font-size: 0.92rem;
+        letter-spacing: 0.4px;
       }
 
       .sb-spot {
         color: #cbd5e1;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+      }
+
+      .plain-translation {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #93c5fd;
+        margin-top: 1px;
       }
 
       /* 3D Floating Labels */
@@ -454,35 +750,59 @@
 
       .field-label {
         position: absolute;
-        transform: translate(-50%, -100%);
-        padding: 4px 9px;
-        border-radius: 6px;
+        translate: -50% -100%;
+        scale: 1;
+        padding: 5px 10px;
+        border-radius: 7px;
         font-size: 0.72rem;
         font-weight: 800;
-        letter-spacing: 0.4px;
+        letter-spacing: 0.3px;
         white-space: nowrap;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        transition: opacity 0.2s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+        transition:
+          opacity 0.2s,
+          scale 0.2s,
+          translate 0.2s;
+      }
+
+      @supports not (translate: 0px) {
+        .field-label {
+          transform: translate(-50%, -100%);
+        }
+      }
+
+      .field-label small {
+        display: block;
+        font-size: 0.62rem;
+        font-weight: 600;
+        opacity: 0.9;
       }
 
       .label-los {
-        background: rgba(37, 99, 235, 0.92);
+        background: rgba(37, 99, 235, 0.94);
         color: #fff;
         border: 1px solid #93c5fd;
       }
 
       .label-fd {
-        background: rgba(234, 179, 8, 0.95);
+        background: rgba(234, 179, 8, 0.96);
         color: #0f172a;
         border: 1px solid #fef08a;
       }
 
+      .label-zone {
+        background: rgba(15, 23, 42, 0.92);
+        color: #fde047;
+        border: 1px solid #facc15;
+        font-size: 0.76rem;
+      }
+
       .label-player {
-        background: rgba(15, 23, 42, 0.88);
+        background: rgba(15, 23, 42, 0.9);
         color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        padding: 2px 6px;
-        font-size: 0.66rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 3px 7px;
+        font-size: 0.67rem;
         cursor: pointer;
         pointer-events: auto;
       }
@@ -491,79 +811,100 @@
         background: var(--accent-gold);
         color: #0f172a;
         border-color: #fff;
-        transform: translate(-50%, -115%) scale(1.15);
+        translate: -50% -115%;
+        scale: 1.15;
         z-index: 15;
+      }
+
+      @supports not (translate: 0px) {
+        .label-player.highlighted {
+          transform: translate(-50%, -115%) scale(1.15);
+        }
       }
 
       /* Announcement Banner */
       #banner {
         position: fixed;
-        top: 44%;
+        top: 42%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(0.85);
+        translate: -50% -50%;
+        scale: 0.85;
         z-index: 30;
-        background: rgba(15, 23, 42, 0.95);
+        background: rgba(15, 23, 42, 0.96);
         border: 2px solid var(--accent-gold);
-        padding: 18px 34px;
+        padding: 18px 32px;
         border-radius: 16px;
         text-align: center;
         pointer-events: none;
         opacity: 0;
-        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
+        transition:
+          opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+          scale 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.78);
+        max-width: 460px;
       }
 
       #banner.show {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        scale: 1;
+      }
+
+      @supports not (translate: 0px) {
+        #banner {
+          transform: translate(-50%, -50%) scale(0.85);
+        }
+        #banner.show {
+          transform: translate(-50%, -50%) scale(1);
+        }
       }
 
       #banner h2 {
-        font-size: 1.8rem;
+        font-size: 1.65rem;
         font-weight: 900;
         color: var(--accent-gold);
-        letter-spacing: 1px;
+        letter-spacing: 0.8px;
       }
 
       #banner p {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #e2e8f0;
-        margin-top: 4px;
+        margin-top: 5px;
+        line-height: 1.4;
       }
 
       .coach-box {
-        background: rgba(30, 58, 138, 0.35);
+        background: rgba(30, 58, 138, 0.38);
         border-left: 3px solid var(--accent-gold);
         padding: 10px 12px;
-        border-radius: 6px;
-        font-size: 0.82rem;
+        border-radius: 7px;
+        font-size: 0.81rem;
         line-height: 1.48;
         color: #e2e8f0;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
-      .coach-box strong {
+      .coach-box > strong {
         color: var(--accent-gold);
         display: block;
         margin-bottom: 3px;
-        font-size: 0.75rem;
+        font-size: 0.73rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
 
       .hint-footer {
-        font-size: 0.73rem;
+        font-size: 0.71rem;
         color: var(--text-muted);
-        margin-top: 12px;
+        margin-top: 10px;
         text-align: center;
       }
 
-      @media (max-width: 820px) {
+      @media (max-width: 860px) {
         .side-panel {
           width: calc(100vw - 32px);
-          max-height: 36vh;
+          max-height: 40vh;
           top: auto;
-          bottom: 145px;
+          bottom: 135px;
         }
         .camera-bar {
           display: none;
@@ -587,59 +928,67 @@
 
     <div id="banner">
       <h2 id="banner-title">TOUCHDOWN!</h2>
-      <p id="banner-sub">+6 Points! Choose your conversion play below.</p>
+      <p id="banner-sub">+6 Points! You reached the opponent's End Zone!</p>
     </div>
 
-    <!-- Top Header -->
+    <!-- Top Header: 6 Zero-to-Fan Progressive Steps -->
     <header>
       <div class="brand">
         <div class="brand-icon">++++</div>
         <div>
           <h1>Football 101</h1>
-          <span>Interactive 3D Guide to American Football</span>
+          <span>Zero-to-Fan Interactive 3D Guide</span>
         </div>
       </div>
       <div class="nav-tabs">
-        <button class="tab-btn active" data-tab="field">
-          1. The Field & Scoring
+        <button class="tab-btn active" data-tab="step1">
+          1. The Goal & Field
         </button>
-        <button class="tab-btn" data-tab="players">2. The 22 Players</button>
-        <button class="tab-btn" data-tab="downs">
-          3. Downs & Play Simulator
+        <button class="tab-btn" data-tab="step2">2. What is a "Play"?</button>
+        <button class="tab-btn" data-tab="step3">
+          3. The 4-Tries Rule
         </button>
-        <button class="tab-btn" data-tab="rules">
-          4. Strategy & Penalties
-        </button>
+        <button class="tab-btn" data-tab="step4">4. How You Score</button>
+        <button class="tab-btn" data-tab="step5">5. Player Jobs</button>
+        <button class="tab-btn" data-tab="step6">6. Play a Live Drive!</button>
       </div>
     </header>
 
     <!-- Camera Angle Switcher -->
     <div class="camera-bar">
-      <button class="cam-btn" data-cam="broadcast">TV Broadcast</button>
-      <button class="cam-btn" data-cam="skycam">QB SkyCam</button>
-      <button class="cam-btn" data-cam="aerial">Bird's-Eye</button>
+      <button class="cam-btn" data-cam="overview">Stadium Overview</button>
+      <button class="cam-btn" data-cam="broadcast">TV Side View</button>
+      <button class="cam-btn" data-cam="skycam">Behind Offense</button>
+      <button class="cam-btn" data-cam="aerial">Top-Down Map</button>
       <button class="cam-btn" data-cam="endzone">Goalpost View</button>
     </div>
 
-    <!-- Left Educational Panel -->
+    <!-- Left Progressive Lesson Panel -->
     <aside class="side-panel" id="side-panel"></aside>
 
-    <!-- Bottom Broadcast Scorebug & Play Calling Controls -->
-    <div class="broadcast-bar">
+    <!-- Bottom Broadcast Scorebug & Play Calling Controls (Hidden in early steps so beginners aren't overwhelmed!) -->
+    <div class="broadcast-bar" id="broadcast-bar">
       <div class="play-controls" id="play-controls"></div>
 
-      <div class="scorebug">
-        <div class="sb-team sb-you">
-          <span>OFFENSE</span>
-          <span class="sb-score" id="score-you">0</span>
-        </div>
-        <div class="sb-situation">
-          <span class="sb-down" id="sb-down-text">1ST & 10</span>
-          <span class="sb-spot" id="sb-spot-text">BALL ON OWN 25</span>
-        </div>
-        <div class="sb-team sb-opp">
-          <span>DEFENSE</span>
-          <span class="sb-score" id="score-opp">0</span>
+      <div class="scorebug-wrapper">
+        <div class="scorebug">
+          <div class="sb-team sb-you">
+            <span>BLUE (OFFENSE)</span>
+            <span class="sb-score" id="score-you">0</span>
+          </div>
+          <div class="sb-situation">
+            <div class="sb-top-line">
+              <span class="sb-down" id="sb-down-text">1ST & 10</span>
+              <span class="sb-spot" id="sb-spot-text">BALL ON OWN 25</span>
+            </div>
+            <div class="plain-translation" id="sb-plain-text">
+              Plain English: Try #1 of 4 • Gain 10 yards to reach the Yellow Line
+            </div>
+          </div>
+          <div class="sb-team sb-opp">
+            <span>RED (DEFENSE)</span>
+            <span class="sb-score" id="score-opp">0</span>
+          </div>
         </div>
       </div>
     </div>
@@ -649,80 +998,91 @@
       import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
       // =========================================================================
-      // 1. EDUCATIONAL CONTENT DATA
+      // 1. BEGINNER-FRIENDLY EDUCATIONAL DATA
       // =========================================================================
+      const STEP_ORDER = ["step1", "step2", "step3", "step4", "step5", "step6"];
+
       const POSITIONS_DATA = {
         QB: {
           name: "Quarterback (QB)",
+          plainRole: "The Leader & Thrower",
           side: "Offense",
-          group: "QB",
-          summary: "The Commander & Field General.",
+          layer: "skill",
+          analogy: "Like a point guard in basketball or a general on the field.",
           details:
-            "Receives the ball on almost every play. In under 3 seconds, the QB reads the defense and either hands the ball off for a run, throws a pass downfield, or scrambles with it himself.",
+            "Receives the ball at the start of every play. In about 3 seconds, the Quarterback either hands the ball to a runner, throws a pass downfield, or runs with it himself.",
+        },
+        OL: {
+          name: "Offensive Line (5 Blockers)",
+          plainRole: "The Human Shield",
+          side: "Offense",
+          layer: "wall",
+          analogy: "Five 310-pound bodyguards protecting the Quarterback.",
+          details:
+            "These 5 massive players are NOT allowed to catch passes or carry the ball! The middle player (the Center) hands the ball between his legs to start the play, and then all 5 form a protective wall.",
         },
         RB: {
           name: "Running Back (RB)",
+          plainRole: "The Power Runner",
           side: "Offense",
-          group: "RB",
-          summary: "Agile Power Runner & Blocker.",
+          layer: "skill",
+          analogy: "A human bowling ball mixed with a sprinter.",
           details:
-            "Lines up next to or behind the QB. Takes handoffs to sprint through gaps created by the Offensive Line, catches short passes, or stays back to block charging defenders.",
+            "Stands next to or behind the Quarterback. On running plays, he takes a handoff and sprints through gaps pushed open by the 5 blockers.",
         },
         WR: {
-          name: "Wide Receiver (WR)",
+          name: "Wide Receivers (WR)",
+          plainRole: "The Fast Pass-Catchers",
           side: "Offense",
-          group: "WR",
-          summary: "High-Speed Pass Catchers.",
+          layer: "outside",
+          analogy: "Track sprinters who catch long throws in mid-air.",
           details:
-            'Lines up wide near the sidelines. Uses speed and sharp footwork ("routes") to get open and make acrobatic catches downfield.',
+            "Line up wide near the sidelines away from the crowded middle. When the play starts, they sprint downfield in planned patterns ('routes') to get open for a catch.",
         },
         TE: {
           name: "Tight End (TE)",
+          plainRole: "Half Blocker, Half Catcher",
           side: "Offense",
-          group: "TE",
-          summary: "The Hybrid Giant (Blocker + Receiver).",
+          layer: "outside",
+          analogy: "The Swiss Army knife of the Offense.",
           details:
-            "Lines up right next to the heavy Offensive Line. Big enough to block like a lineman on run plays, yet athletic enough to run out and catch passes!",
-        },
-        OL: {
-          name: "Offensive Line (5 Players: C, G, T)",
-          side: "Offense",
-          group: "OL",
-          summary: "The Bodyguards (Never Touch the Ball!).",
-          details:
-            'Five massive 310+ lb athletes (Center, 2 Guards, 2 Tackles). The Center snaps the ball between his legs to start the play. Their job: form a protective "pocket" around the QB or push defenders backward on runs.',
+            "Lines up right next to the 5 heavy blockers. Big enough to help push defenders on running plays, yet fast enough to run out and catch passes!",
         },
         DL: {
-          name: "Defensive Line (4 Players: DE, DT)",
+          name: "Defensive Line (4 Rushers)",
+          plainRole: "The Wall Breakers",
           side: "Defense",
-          group: "DL",
-          summary: "Trench Wreckers & Pass Rushers.",
+          layer: "wall",
+          analogy: "Four heavy wrecking balls trying to break through the shield.",
           details:
-            'Battle the Offensive Line on every snap. They try to tackle the Running Back behind the line or "sack" the Quarterback before he can throw.',
+            "Line up directly across from the 5 Offensive Blockers. Their job is to shove past the blockers to tackle the runner or tackle ('sack') the Quarterback before he can throw.",
         },
         LB: {
-          name: "Linebackers (3 Players: LB)",
+          name: "Linebackers (3 Defenders)",
+          plainRole: "All-Around Tacklers",
           side: "Defense",
-          group: "LB",
-          summary: "The Quarterbacks of the Defense.",
+          layer: "skill",
+          analogy: "The flexible middle guards of the Defense.",
           details:
-            "Stand 4–5 yards behind the line. They must diagnose in a split second whether it is a run (charge forward to tackle) or pass (drop back to cover Tight Ends/RBs).",
+            "Stand a few steps behind the Defensive Line. They watch the Quarterback's eyes: if it's a run, they charge forward to tackle; if it's a pass, they drop back to guard short throws.",
         },
         CB: {
           name: "Cornerbacks (CB)",
+          plainRole: "Pass Shadow Guards",
           side: "Defense",
-          group: "CB",
-          summary: "Shadow Lockdown Defenders.",
+          layer: "outside",
+          analogy: "One-on-one shadow defenders.",
           details:
-            "The fastest athletes on defense. They mirror Wide Receivers step-for-step downfield trying to swat passes away or catch an Interception.",
+            "Line up face-to-face with the speedy Wide Receivers on the outside. They run step-for-step with them to bat the ball away or catch it themselves (an Interception!).",
         },
         S: {
-          name: "Safeties (Free & Strong Safety)",
+          name: "Safeties (2 Deep Guards)",
+          plainRole: "The Last Line of Defense",
           side: "Defense",
-          group: "S",
-          summary: "The Last Line of Defense.",
+          layer: "outside",
+          analogy: "Like outfielders or a sweeping goalkeeper.",
           details:
-            "Positioned 10–15 yards deep. If a runner breaks loose or a QB throws a deep 50-yard bomb, Safeties prevent a Touchdown.",
+            "Stand 12 to 15 yards deep behind everyone else. If a runner breaks past everyone or the Quarterback throws a huge long pass, the Safeties are there to save a Touchdown.",
         },
       };
 
@@ -734,15 +1094,15 @@
 
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x070b16);
-      scene.fog = new THREE.FogExp2(0x070b16, 0.0042);
+      scene.fog = new THREE.FogExp2(0x070b16, 0.0038);
 
       const camera = new THREE.PerspectiveCamera(
         45,
         window.innerWidth / window.innerHeight,
         0.5,
-        400,
+        420,
       );
-      camera.position.set(-20, 42, 58);
+      camera.position.set(0, 66, 72);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -755,12 +1115,12 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.07;
       controls.maxPolarAngle = Math.PI / 2 - 0.04;
-      controls.minDistance = 12;
-      controls.maxDistance = 155;
-      controls.target.set(-20, 0, 0);
+      controls.minDistance = 10;
+      controls.maxDistance = 165;
+      controls.target.set(0, 0, 0);
 
       // Stadium Lighting
-      const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.75);
+      const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.8);
       scene.add(ambientLight);
 
       const sunLight = new THREE.DirectionalLight(0xffffff, 1.35);
@@ -774,7 +1134,6 @@
       sunLight.shadow.camera.bottom = -45;
       scene.add(sunLight);
 
-      // Rim stadium floodlight
       const rimLight = new THREE.DirectionalLight(0x60a5fa, 0.45);
       rimLight.position.set(-50, 50, -50);
       scene.add(rimLight);
@@ -786,8 +1145,8 @@
         canvas.height = 1066;
         const ctx = canvas.getContext("2d");
 
-        const pxPerYardX = canvas.width / 120; // 20px per yard
-        const pxPerYardZ = canvas.height / 53.3; // ~20px per yard
+        const pxPerYardX = canvas.width / 120;
+        const pxPerYardZ = canvas.height / 53.3;
 
         // Alternating 5-yard turf mowing stripes
         for (let yd = 0; yd < 120; yd += 5) {
@@ -795,17 +1154,17 @@
           ctx.fillRect(yd * pxPerYardX, 0, 5 * pxPerYardX, canvas.height);
         }
 
-        // Left End Zone (0 to 10 yds -> Offense Own Endzone: Blue)
+        // Left End Zone (0 to 10 yds -> Blue Team's Own Endzone)
         ctx.fillStyle = "#1e3a8a";
         ctx.fillRect(0, 0, 10 * pxPerYardX, canvas.height);
 
-        // Right End Zone (110 to 120 yds -> Opponent Endzone: Red)
+        // Right End Zone (110 to 120 yds -> Red Opponent Endzone / Goal)
         ctx.fillStyle = "#991b1b";
         ctx.fillRect(110 * pxPerYardX, 0, 10 * pxPerYardX, canvas.height);
 
         // End Zone Text
         ctx.save();
-        ctx.font = "900 110px Impact, Arial Black, sans-serif";
+        ctx.font = "900 95px Impact, Arial Black, sans-serif";
         ctx.fillStyle = "rgba(255,255,255,0.85)";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -813,7 +1172,7 @@
         ctx.save();
         ctx.translate(5 * pxPerYardX, canvas.height / 2);
         ctx.rotate(-Math.PI / 2);
-        ctx.fillText("OFFENSE", 0, 0);
+        ctx.fillText("YOUR SIDE", 0, 0);
         ctx.restore();
 
         ctx.save();
@@ -847,7 +1206,6 @@
         for (let yd = 11; yd < 110; yd++) {
           if (yd % 5 === 0) continue;
           const x = yd * pxPerYardX;
-          // Sideline hashes & middle hashes
           [
             [18, 32],
             [canvas.height - 32, canvas.height - 18],
@@ -871,10 +1229,8 @@
           const displayNum = fieldYd <= 50 ? fieldYd : 100 - fieldYd;
           const x = (10 + fieldYd) * pxPerYardX;
 
-          // Bottom numbers
           ctx.fillText(displayNum.toString(), x, canvas.height - 145);
 
-          // Top numbers (upside down like real TV broadcasts)
           ctx.save();
           ctx.translate(x, 145);
           ctx.rotate(Math.PI);
@@ -899,30 +1255,29 @@
         return tex;
       }
 
-      // Stadium Ground Surrounding Apron
-      const apronGeo = new THREE.PlaneGeometry(156, 86);
-      const apronMat = new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        roughness: 0.9,
-      });
-      const apron = new THREE.Mesh(apronGeo, apronMat);
+      // Stadium Apron
+      const apron = new THREE.Mesh(
+        new THREE.PlaneGeometry(156, 86),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 }),
+      );
       apron.rotation.x = -Math.PI / 2;
       apron.position.y = -0.06;
       apron.receiveShadow = true;
       scene.add(apron);
 
-      // Main 120 x 53.3 Yard Field (1 unit = 1 yard! X: -60 to +60, Z: -26.65 to +26.65)
-      const fieldGeo = new THREE.PlaneGeometry(120, 53.3);
-      const fieldMat = new THREE.MeshStandardMaterial({
-        map: createFieldTexture(),
-        roughness: 0.78,
-      });
-      const fieldMesh = new THREE.Mesh(fieldGeo, fieldMat);
+      // 120 x 53.3 Yard Field (1 unit = 1 yard; Playable 100 yards is X = -50 to +50)
+      const fieldMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(120, 53.3),
+        new THREE.MeshStandardMaterial({
+          map: createFieldTexture(),
+          roughness: 0.78,
+        }),
+      );
       fieldMesh.rotation.x = -Math.PI / 2;
       fieldMesh.receiveShadow = true;
       scene.add(fieldMesh);
 
-      // Subtle Stadium Low Wall
+      // Stadium Border Walls
       const wallMat = new THREE.MeshStandardMaterial({
         color: 0x0f172a,
         roughness: 0.6,
@@ -937,8 +1292,7 @@
       createWall(1.2, 2.2, 71, -70, 0);
       createWall(1.2, 2.2, 71, 70, 0);
 
-      // Goalposts Builder (at X = -60 and X = +60)
-      const goalposts = [];
+      // Goalposts (at X = -60 and X = +60)
       function buildGoalpost(xPos, dirSign) {
         const group = new THREE.Group();
         const postMat = new THREE.MeshStandardMaterial({
@@ -947,7 +1301,6 @@
           metalness: 0.4,
         });
 
-        // Base gooseneck support
         const base = new THREE.Mesh(
           new THREE.CylinderGeometry(0.22, 0.28, 3.33, 16),
           postMat,
@@ -963,7 +1316,6 @@
         neck.position.set(xPos + dirSign * 0.8, 3.33, 0);
         group.add(neck);
 
-        // 18.5 ft (6.16 yds) Crossbar at 10 ft (3.33 yds) high
         const crossbar = new THREE.Mesh(
           new THREE.CylinderGeometry(0.16, 0.16, 6.16, 16),
           postMat,
@@ -972,7 +1324,6 @@
         crossbar.position.set(xPos, 3.33, 0);
         group.add(crossbar);
 
-        // Two 35-ft (11.6 yds) Uprights
         [-3.08, 3.08].forEach((z) => {
           const upright = new THREE.Mesh(
             new THREE.CylinderGeometry(0.12, 0.12, 11.5, 16),
@@ -984,12 +1335,11 @@
         });
 
         scene.add(group);
-        goalposts.push(group);
       }
       buildGoalpost(-60, -1);
       buildGoalpost(60, 1);
 
-      // Orange Endzone Pylons
+      // Orange Endzone Corner Pylons
       const pylonGeo = new THREE.BoxGeometry(0.35, 1.1, 0.35);
       const pylonMat = new THREE.MeshStandardMaterial({
         color: 0xf97316,
@@ -1005,33 +1355,74 @@
       });
 
       // =========================================================================
-      // 3. TV BROADCAST LINES (BLUE SCRIMMAGE & YELLOW 1ST DOWN) + HIGHLIGHT ZONES
+      // 3. PROGRESSIVE VISUAL GUIDES (DIRECTION ARROW, LINES, 10-YD CARPET)
       // =========================================================================
+      // Direction Arrow on Turf (for Step 1 so beginners see which way Offense attacks)
+      const directionArrowGroup = new THREE.Group();
+      const arrowMat = new THREE.MeshBasicMaterial({
+        color: 0xfacc15,
+        transparent: true,
+        opacity: 0.78,
+        side: THREE.DoubleSide,
+      });
+      const arrowShaft = new THREE.Mesh(
+        new THREE.PlaneGeometry(55, 3.2),
+        arrowMat,
+      );
+      arrowShaft.rotation.x = -Math.PI / 2;
+      arrowShaft.position.set(-4, 0.04, 0);
+      directionArrowGroup.add(arrowShaft);
+
+      const arrowHeadGeo = new THREE.ConeGeometry(4.5, 9, 3);
+      const arrowHead = new THREE.Mesh(arrowHeadGeo, arrowMat);
+      arrowHead.rotation.z = -Math.PI / 2;
+      arrowHead.rotation.y = Math.PI / 2;
+      arrowHead.scale.y = 0.05;
+      arrowHead.position.set(28, 0.05, 0);
+      directionArrowGroup.add(arrowHead);
+      scene.add(directionArrowGroup);
+
+      // Blue Line (Starting Line / Line of Scrimmage)
       const losLine = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.45, 53.3),
+        new THREE.PlaneGeometry(0.5, 53.3),
         new THREE.MeshBasicMaterial({
           color: 0x3b82f6,
           transparent: true,
-          opacity: 0.92,
+          opacity: 0.95,
         }),
       );
       losLine.rotation.x = -Math.PI / 2;
       losLine.position.y = 0.03;
       scene.add(losLine);
 
+      // Yellow Line (10-Yard Target / First Down Line)
       const firstDownLine = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.55, 53.3),
+        new THREE.PlaneGeometry(0.6, 53.3),
         new THREE.MeshBasicMaterial({
           color: 0xfacc15,
           transparent: true,
-          opacity: 0.95,
+          opacity: 0.96,
         }),
       );
       firstDownLine.rotation.x = -Math.PI / 2;
       firstDownLine.position.y = 0.035;
       scene.add(firstDownLine);
 
-      // Highlight overlay box for Module 1 (Endzone / Red Zone / Field)
+      // 10-Yard Glowing Carpet between Blue Line & Yellow Line (helps beginners SEE the 10-yard target zone!)
+      const tenYardCarpet = new THREE.Mesh(
+        new THREE.PlaneGeometry(1, 53.3),
+        new THREE.MeshBasicMaterial({
+          color: 0xfacc15,
+          transparent: true,
+          opacity: 0.14,
+          side: THREE.DoubleSide,
+        }),
+      );
+      tenYardCarpet.rotation.x = -Math.PI / 2;
+      tenYardCarpet.position.y = 0.02;
+      scene.add(tenYardCarpet);
+
+      // Zone Highlight Overlay (for Step 1 & Step 4 tours)
       const zoneHighlight = new THREE.Mesh(
         new THREE.PlaneGeometry(10, 53.3),
         new THREE.MeshBasicMaterial({
@@ -1045,19 +1436,26 @@
       zoneHighlight.position.y = 0.05;
       scene.add(zoneHighlight);
 
-      // HTML Labels for Blue & Yellow Lines
+      // Floating HTML Labels for Lines & Zones
       const losLabelEl = document.createElement("div");
       losLabelEl.className = "field-label label-los";
-      losLabelEl.textContent = "LINE OF SCRIMMAGE";
+      losLabelEl.innerHTML =
+        'BLUE STARTING LINE<small>"Line of Scrimmage"</small>';
       labelsContainer.appendChild(losLabelEl);
 
       const fdLabelEl = document.createElement("div");
       fdLabelEl.className = "field-label label-fd";
-      fdLabelEl.textContent = "1ST DOWN LINE";
+      fdLabelEl.innerHTML =
+        'YELLOW TARGET LINE<small>10-Yard Goal ("1st Down")</small>';
       labelsContainer.appendChild(fdLabelEl);
 
+      const zoneLabelEl = document.createElement("div");
+      zoneLabelEl.className = "field-label label-zone";
+      zoneLabelEl.style.display = "none";
+      labelsContainer.appendChild(zoneLabelEl);
+
       // =========================================================================
-      // 4. THE 22 PLAYERS & 3D FOOTBALL + PENALTY FLAG
+      // 4. PLAYERS & 3D FOOTBALL
       // =========================================================================
       const players = [];
       const playerMeshes = [];
@@ -1089,11 +1487,11 @@
         relX,
         relZ,
         scaleRadius = 0.55,
+        inMiniDemo = false,
       ) {
         const group = new THREE.Group();
         const baseMat = side === "Offense" ? offenseBodyMat : defenseBodyMat;
 
-        // Torso
         const body = new THREE.Mesh(
           new THREE.CylinderGeometry(scaleRadius, scaleRadius * 0.82, 1.55, 16),
           baseMat,
@@ -1102,7 +1500,6 @@
         body.castShadow = true;
         group.add(body);
 
-        // Helmet
         const helmet = new THREE.Mesh(
           new THREE.SphereGeometry(0.42, 16, 16),
           helmetWhiteMat,
@@ -1111,7 +1508,6 @@
         helmet.castShadow = true;
         group.add(helmet);
 
-        // Selection ring on turf
         const ring = new THREE.Mesh(
           new THREE.RingGeometry(scaleRadius + 0.2, scaleRadius + 0.42, 24),
           new THREE.MeshBasicMaterial({
@@ -1127,10 +1523,9 @@
 
         scene.add(group);
 
-        // Floating HTML Badge for Module 2
         const tag = document.createElement("div");
         tag.className = "field-label label-player";
-        tag.textContent = roleKey;
+        tag.textContent = label;
         tag.style.display = "none";
         tag.addEventListener("click", () => selectPositionGroup(roleKey));
         labelsContainer.appendChild(tag);
@@ -1141,6 +1536,7 @@
           side,
           relX,
           relZ,
+          inMiniDemo,
           group,
           body,
           ring,
@@ -1157,32 +1553,38 @@
         return playerObj;
       }
 
-      // Build 11 Offense Players (moving toward +X)
+      // Build 11 Offense Players (Only Center, QB, RB, and 1 WR are tagged `inMiniDemo = true` for Step 2!)
+      let centerPlayer = null;
       [-3.2, -1.6, 0, 1.6, 3.2].forEach((z, idx) => {
-        createPlayer(
+        const isCenter = idx === 2;
+        const p = createPlayer(
           "OL",
-          idx === 2 ? "Center (C)" : "Offensive Line",
+          isCenter ? "Center (Snaps Ball)" : "Blocker (OL)",
           "Offense",
           -0.9,
           z,
           0.72,
+          isCenter,
         );
+        if (isCenter) centerPlayer = p;
       });
       const qbPlayer = createPlayer(
         "QB",
-        "Quarterback",
+        "Quarterback (Thrower)",
         "Offense",
         -4.8,
         0,
         0.56,
+        true,
       );
       const rbPlayer = createPlayer(
         "RB",
-        "Running Back",
+        "Running Back (Runner)",
         "Offense",
         -5.4,
-        2.2,
+        2.4,
         0.58,
+        true,
       );
       const tePlayer = createPlayer(
         "TE",
@@ -1191,59 +1593,100 @@
         -1.0,
         5.0,
         0.65,
+        false,
       );
       const wr1 = createPlayer(
         "WR",
-        "Wide Receiver (X)",
+        "Receiver (Catcher)",
         "Offense",
         -0.9,
         -15.5,
         0.52,
+        false,
       );
       const wr2 = createPlayer(
         "WR",
-        "Slot Receiver",
+        "Receiver (Catcher)",
         "Offense",
         -1.9,
         -8.5,
         0.52,
+        true,
       );
       const wr3 = createPlayer(
         "WR",
-        "Wide Receiver (Z)",
+        "Receiver (Catcher)",
         "Offense",
         -1.4,
         15.0,
         0.52,
+        false,
       );
 
-      // Build 11 Defense Players (facing -X)
+      // Build 11 Defense Players (Only 1 LB and 1 CB are tagged `inMiniDemo = true` for Step 2!)
       [-3.8, -1.3, 1.3, 4.2].forEach((z) => {
-        createPlayer("DL", "Defensive Line", "Defense", 0.9, z, 0.7);
+        createPlayer(
+          "DL",
+          "Rusher (DL)",
+          "Defense",
+          0.9,
+          z,
+          0.7,
+          false,
+        );
       });
-      [-4.2, 0, 4.5].forEach((z) => {
-        createPlayer("LB", "Linebacker", "Defense", 4.6, z, 0.62);
+      let demoTackler = null;
+      [-4.2, 0, 4.5].forEach((z, idx) => {
+        const isMid = idx === 1;
+        const p = createPlayer(
+          "LB",
+          "Tackler (LB)",
+          "Defense",
+          4.6,
+          z,
+          0.62,
+          isMid,
+        );
+        if (isMid) demoTackler = p;
       });
-      const cb1 = createPlayer("CB", "Cornerback", "Defense", 4.2, -15.5, 0.52);
-      const cb2 = createPlayer("CB", "Cornerback", "Defense", 4.2, 15.0, 0.52);
+      const cb1 = createPlayer(
+        "CB",
+        "Pass Guard (CB)",
+        "Defense",
+        4.2,
+        -8.5,
+        0.52,
+        true,
+      );
+      const cb2 = createPlayer(
+        "CB",
+        "Pass Guard (CB)",
+        "Defense",
+        4.2,
+        15.0,
+        0.52,
+        false,
+      );
       const ssPlayer = createPlayer(
         "S",
-        "Strong Safety",
+        "Deep Safety",
         "Defense",
         8.5,
         -6.5,
         0.55,
+        false,
       );
       const fsPlayer = createPlayer(
         "S",
-        "Free Safety",
+        "Deep Safety",
         "Defense",
         12.5,
         5.5,
         0.55,
+        false,
       );
 
-      // 3D Prolate Spheroid Football
+      // 3D Football
       const ballGroup = new THREE.Group();
       const ballGeo = new THREE.SphereGeometry(0.38, 16, 16);
       ballGeo.scale(1.55, 0.95, 0.95);
@@ -1262,7 +1705,21 @@
       ballGroup.add(laces);
       scene.add(ballGroup);
 
-      // 3D Yellow Penalty Flag (for Module 4)
+      // Glowing ring underneath the ball so beginners can always spot the ball easily!
+      const ballBeacon = new THREE.Mesh(
+        new THREE.RingGeometry(0.65, 1.05, 24),
+        new THREE.MeshBasicMaterial({
+          color: 0xfef08a,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.85,
+        }),
+      );
+      ballBeacon.rotation.x = -Math.PI / 2;
+      ballBeacon.position.y = 0.04;
+      scene.add(ballBeacon);
+
+      // 3D Yellow Penalty Flag
       const penaltyFlag = new THREE.Mesh(
         new THREE.ConeGeometry(0.42, 0.95, 8),
         new THREE.MeshStandardMaterial({
@@ -1275,28 +1732,36 @@
       scene.add(penaltyFlag);
 
       // =========================================================================
-      // 5. GAME STATE & FORMATION PLACEMENT
+      // 5. STATE & PROGRESSIVE SCENE VISIBILITY CONTROLLER
       // =========================================================================
       const gameState = {
-        activeTab: "field",
+        activeTab: "step1",
         selectedPosGroup: "QB",
-        losX: -25, // -25 corresponds to Offense's OWN 25-yard line
-        firstDownX: -15, // -15 corresponds to OWN 35-yard line (10 yards ahead)
+        playerLayerFilter: "all", // "wall" | "skill" | "outside" | "all"
+        losX: -25, // -25 = Own 25-yard line
+        firstDownX: -15, // -15 = Own 35-yard line (+10 yards ahead)
         down: 1,
         scoreYou: 0,
         scoreOpp: 0,
         awaitingConversion: false,
         animating: false,
+        step2Note:
+          "Click one of the 3 buttons below to watch how a single play starts and finishes in slow, clear 3D!",
+        step3Note:
+          "You are at the Blue Line and need 10 yards to reach the Yellow Line. Click a play below to use Try #1 of 4!",
         coachMessage:
-          'Welcome! You have the ball at your own 25-yard line. You have 4 chances ("downs") to advance 10 yards past the Yellow Line. Pick a play below!',
+          "You have the ball at your own 25-yard line (Try #1 of 4, needing 10 yards). Pick any play below—watch the Coach's recommendation badge!",
       };
+
+      const broadcastBarEl = document.getElementById("broadcast-bar");
+      const playControlsEl = document.getElementById("play-controls");
 
       function formatYardLine(x) {
         const rounded = Math.round(x);
-        if (rounded === 0) return "50 YD LINE";
-        if (rounded < 0) return `OWN ${50 + rounded}`;
-        if (rounded >= 50) return "END ZONE";
-        return `OPP ${50 - rounded}`;
+        if (rounded === 0) return "50 YD LINE (MIDFIELD)";
+        if (rounded < 0) return `YOUR ${50 + rounded} YD LINE`;
+        if (rounded >= 50) return "OPPONENT END ZONE";
+        return `OPPONENT ${50 - rounded} YD LINE`;
       }
 
       function formatOrdinal(n) {
@@ -1309,10 +1774,13 @@
 
         const downEl = document.getElementById("sb-down-text");
         const spotEl = document.getElementById("sb-spot-text");
+        const plainEl = document.getElementById("sb-plain-text");
 
         if (gameState.awaitingConversion) {
-          downEl.textContent = "CONVERSION TRY";
-          spotEl.textContent = "1 PT KICK OR 2 PT PLAY";
+          downEl.textContent = "BONUS TRY AFTER TD";
+          spotEl.textContent = "CHOOSE +1 KICK OR +2 PLAY";
+          plainEl.textContent =
+            "Plain English: Free bonus attempt after your 6-point Touchdown!";
         } else {
           const dist =
             gameState.firstDownX >= 50
@@ -1320,16 +1788,82 @@
               : Math.max(1, Math.round(gameState.firstDownX - gameState.losX));
           downEl.textContent = `${formatOrdinal(gameState.down)} & ${dist}`;
           spotEl.textContent = `BALL ON ${formatYardLine(gameState.losX)}`;
+
+          const yardsToScore = Math.max(0, Math.round(50 - gameState.losX));
+          if (dist === "GOAL") {
+            plainEl.textContent = `Plain English: Try #${gameState.down} of 4 • Reach the Red End Zone (${yardsToScore} yds away) to score!`;
+          } else {
+            plainEl.textContent = `Plain English: Try #${gameState.down} of 4 • Gain ${dist} more yards to reach the Yellow Line (${yardsToScore} yds from Touchdown)`;
+          }
         }
+      }
+
+      // Controls what 3D elements are visible in each step so beginners are NEVER overwhelmed
+      function syncSceneToCurrentStep() {
+        const tab = gameState.activeTab;
+
+        // 1. Direction arrow only in Step 1
+        directionArrowGroup.visible = tab === "step1";
+
+        // 2. Blue Line (Starting Line) visible from Step 2 onward
+        losLine.visible = tab !== "step1";
+
+        // 3. Yellow Line & 10-yd Carpet only visible in Step 3 and Step 6 (where Downs are used)
+        const showYellow =
+          (tab === "step3" || tab === "step6") && !gameState.awaitingConversion;
+        firstDownLine.visible = showYellow;
+        tenYardCarpet.visible = showYellow;
+
+        // 4. Broadcast Scorebug at bottom: ONLY show in Step 6 (Full Live Drive)
+        broadcastBarEl.classList.toggle("visible", tab === "step6");
+
+        // 5. Players visibility per step
+        players.forEach((p) => {
+          if (tab === "step1") {
+            // Empty field in Step 1!
+            p.group.visible = false;
+            p.tag.style.display = "none";
+          } else if (tab === "step2") {
+            // Only 6 key players in Step 2 (Center, QB, RB, 1 Receiver, 1 Tackler, 1 Pass Guard)
+            p.group.visible = p.inMiniDemo;
+            p.tag.style.display = p.inMiniDemo ? "block" : "none";
+            p.tag.textContent = p.label;
+          } else if (tab === "step4") {
+            // Scoring step: show only QB, RB, WR2, Kicker/Center so animations are super clean
+            p.group.visible = p.inMiniDemo;
+            p.tag.style.display = "none";
+          } else if (tab === "step5") {
+            // Player jobs step: filter by selected layer!
+            const layer = POSITIONS_DATA[p.roleKey].layer;
+            const visibleInLayer =
+              gameState.playerLayerFilter === "all" ||
+              gameState.playerLayerFilter === layer;
+            p.group.visible = visibleInLayer;
+            p.tag.style.display = visibleInLayer ? "block" : "none";
+            p.tag.textContent = p.roleKey;
+          } else {
+            // Step 3 & Step 6: full formation
+            p.group.visible = true;
+            p.tag.style.display = "none";
+          }
+        });
+
+        // Enlarge football slightly in Step 1 so it stands out on the empty field
+        const ballScale = tab === "step1" ? 1.85 : 1.15;
+        ballGroup.scale.setScalar(ballScale);
       }
 
       function resetFormationToLOS() {
         losLine.position.x = gameState.losX;
-        firstDownLine.position.x = Math.min(50, gameState.firstDownX);
-        firstDownLine.visible = !gameState.awaitingConversion;
+        const fdX = Math.min(50, gameState.firstDownX);
+        firstDownLine.position.x = fdX;
+
+        // Position the 10-yard glowing carpet between Blue and Yellow lines
+        const carpetWidth = Math.max(0.1, fdX - gameState.losX);
+        tenYardCarpet.scale.x = carpetWidth;
+        tenYardCarpet.position.x = gameState.losX + carpetWidth / 2;
 
         players.forEach((p) => {
-          // Compress defense depth near the goal line so they don't stand behind the stadium wall
           let rx = p.relX;
           if (p.side === "Defense" && gameState.losX + rx > 56) {
             rx = Math.min(rx * 0.55, 56 - gameState.losX);
@@ -1338,20 +1872,24 @@
           p.startPos.copy(p.group.position);
         });
 
-        // Place football at Center's feet before snap
-        ballGroup.position.set(gameState.losX - 0.5, 0.38, 0);
+        if (gameState.activeTab === "step1") {
+          ballGroup.position.set(-25, 0.7, 0);
+        } else {
+          ballGroup.position.set(gameState.losX - 0.5, 0.42, 0);
+        }
         ballGroup.rotation.set(0, 0, 0);
-        updateScorebugUI();
-      }
+        ballBeacon.position.set(ballGroup.position.x, 0.04, ballGroup.position.z);
 
-      resetFormationToLOS();
+        updateScorebugUI();
+        syncSceneToCurrentStep();
+      }
 
       // =========================================================================
       // 6. SMOOTH CAMERA PRESETS
       // =========================================================================
       let camTween = null;
 
-      function flyCameraTo(pos, target, duration = 900) {
+      function flyCameraTo(pos, target, duration = 850) {
         camTween = {
           startPos: camera.position.clone(),
           endPos: new THREE.Vector3(...pos),
@@ -1369,12 +1907,14 @@
             b.classList.toggle("active", b.dataset.cam === preset),
           );
         const x = gameState.losX;
-        if (preset === "broadcast") {
-          flyCameraTo([x - 4, 24, 42], [x + 6, 0, 0]);
+        if (preset === "overview") {
+          flyCameraTo([-8, 72, 82], [-12, 0, 0]);
+        } else if (preset === "broadcast") {
+          flyCameraTo([x - 4, 23, 40], [x + 6, 0, 0]);
         } else if (preset === "skycam") {
           flyCameraTo([x - 16, 11, 0], [x + 14, 1.5, 0]);
         } else if (preset === "aerial") {
-          flyCameraTo([0, 92, 0.1], [0, 0, 0]);
+          flyCameraTo([0, 95, 0.1], [0, 0, 0]);
         } else if (preset === "endzone") {
           flyCameraTo([74, 14, 0], [35, 3, 0]);
         }
@@ -1388,7 +1928,7 @@
       // 7. BANNER HELPER
       // =========================================================================
       let bannerTimer = null;
-      function showBanner(title, subtitle, duration = 2600) {
+      function showBanner(title, subtitle, duration = 2700) {
         const el = document.getElementById("banner");
         document.getElementById("banner-title").textContent = title;
         document.getElementById("banner-sub").textContent = subtitle;
@@ -1398,40 +1938,153 @@
       }
 
       // =========================================================================
-      // 8. PLAY ANIMATION ENGINE (RUN, PASS, FIELD GOAL, PUNT, FLAG)
+      // 8. UNIFIED 3D ANIMATION ENGINE (STEP 1 DEMOS, STEP 2 PLAY DEMOS, STEP 3/6 SIM)
       // =========================================================================
       let activePlayAnim = null;
 
-      function setPlayButtonsDisabled(disabled) {
+      function setAllSimButtonsDisabled(disabled) {
         document
-          .querySelectorAll(".play-btn")
+          .querySelectorAll(".play-btn, .sim-trigger-btn")
           .forEach((b) => (b.disabled = disabled));
       }
 
-      function runSimulatedPlay(type) {
+      // Special Step 1 animation: March the ball 100 yards into the Red End Zone
+      function runStep1MarchDemo() {
         if (gameState.animating) return;
         gameState.animating = true;
-        setPlayButtonsDisabled(true);
+        setZoneHighlight(true, 55, 10, 0xef4444, "OPPONENT END ZONE (GOAL!)");
+        flyCameraTo([0, 58, 65], [10, 0, 0], 700);
+
+        activePlayAnim = {
+          mode: "step1_march",
+          startTime: performance.now(),
+          duration: 1900,
+        };
+      }
+
+      // Step 2 & Step 4 scripted clarity demos (guaranteed outcomes so beginners see the exact concept!)
+      function runScriptedDemo(demoKind) {
+        if (gameState.animating) return;
+        gameState.animating = true;
+        setAllSimButtonsDisabled(true);
+        resetFormationToLOS();
+
+        const startX = gameState.losX;
+        let yardsGained = 0;
+        let type = "run";
+        let outcomeType = "normal";
+        let carrierEndZ = 0;
+        let ballArcPeak = 3.8;
+        let passTargetPlayer = wr2;
+
+        if (demoKind === "demo_run") {
+          type = "run";
+          yardsGained = 6;
+          carrierEndZ = 2.0;
+        } else if (demoKind === "demo_pass_complete") {
+          type = "short_pass";
+          yardsGained = 8;
+          carrierEndZ = -6.5;
+          ballArcPeak = 4.5;
+        } else if (demoKind === "demo_pass_incomplete") {
+          type = "short_pass";
+          outcomeType = "incomplete";
+          yardsGained = 0;
+          carrierEndZ = -6.5;
+          ballArcPeak = 4.0;
+        } else if (demoKind === "score_td") {
+          type = "short_pass";
+          yardsGained = 54 - startX;
+          carrierEndZ = -5;
+          ballArcPeak = 5.5;
+        } else if (demoKind === "score_fg") {
+          type = "fg";
+          outcomeType = "fg_good";
+          ballArcPeak = 13.5;
+          carrierEndZ = 0;
+        } else if (demoKind === "score_2pt") {
+          type = "two_pt";
+          yardsGained = 5;
+          carrierEndZ = 2.5;
+          ballArcPeak = 3.2;
+        }
+
+        const rawDestX = Math.min(54, startX + yardsGained);
+
+        players.forEach((p) => {
+          p.startPos.copy(p.group.position);
+          p.targetPos.copy(p.startPos);
+          if (!p.group.visible) return;
+
+          if (type === "fg") {
+            return;
+          }
+          if (p.roleKey === "OL") {
+            p.targetPos.x = startX + (type === "run" ? 1.0 : -0.8);
+          } else if (p.roleKey === "QB") {
+            p.targetPos.x = startX - 6.2;
+          } else if (p.roleKey === "RB") {
+            if (type === "run") {
+              p.targetPos.set(rawDestX, 0, carrierEndZ);
+            } else {
+              p.targetPos.set(startX - 2, 0, 4);
+            }
+          } else if (p.roleKey === "WR") {
+            p.targetPos.set(startX + 8, 0, carrierEndZ);
+          } else if (p.roleKey === "LB") {
+            p.targetPos.set(
+              type === "run" ? rawDestX + 0.6 : startX + 4,
+              0,
+              type === "run" ? carrierEndZ : 0,
+            );
+          } else if (p.roleKey === "CB") {
+            p.targetPos.set(startX + 8.6, 0, carrierEndZ);
+          }
+        });
+
+        activePlayAnim = {
+          mode: "scripted",
+          demoKind,
+          type,
+          outcomeType,
+          startX,
+          yardsGained,
+          rawDestX,
+          carrierEndZ,
+          ballArcPeak,
+          passTargetPlayer,
+          startTime: performance.now(),
+          duration: 1750,
+        };
+      }
+
+      // Live Play Simulation (Used in Step 3 Guided Try-by-Try and Step 6 Full Drive)
+      function runSimulatedPlay(type, fixedGain = null) {
+        if (gameState.animating) return;
+        gameState.animating = true;
+        setAllSimButtonsDisabled(true);
         penaltyFlag.visible = false;
 
         const startX = gameState.losX;
         let yardsGained = 0;
-        let outcomeType = "normal"; // normal | incomplete | interception | fg_good | fg_miss | punt
+        let outcomeType = "normal";
         let ballArcPeak = 3.5;
         let carrierEndZ = 0;
         let passTargetPlayer = wr2;
 
-        // Determine realistic football outcome
-        if (type === "run") {
+        if (fixedGain !== null) {
+          yardsGained = fixedGain;
+          carrierEndZ = type === "run" ? 1.5 : -6.5;
+          ballArcPeak = 4.2;
+        } else if (type === "run") {
           const roll = Math.random();
-          if (roll < 0.15) yardsGained = -1;
-          else if (roll < 0.78)
-            yardsGained = Math.floor(3 + Math.random() * 5); // 3 to 7 yds
-          else yardsGained = Math.floor(9 + Math.random() * 12); // Breakaway run!
+          if (roll < 0.12) yardsGained = 1;
+          else if (roll < 0.8) yardsGained = Math.floor(3 + Math.random() * 5);
+          else yardsGained = Math.floor(9 + Math.random() * 10);
           carrierEndZ = (Math.random() - 0.3) * 6;
         } else if (type === "short_pass") {
           passTargetPlayer = Math.random() > 0.45 ? wr2 : tePlayer;
-          if (Math.random() < 0.68) {
+          if (Math.random() < 0.72) {
             yardsGained = Math.floor(5 + Math.random() * 8);
             carrierEndZ = passTargetPlayer.relZ * 0.75;
             ballArcPeak = 4.2;
@@ -1446,8 +2099,8 @@
           const roll = Math.random();
           carrierEndZ = passTargetPlayer.relZ * 0.85;
           ballArcPeak = 11.5;
-          if (roll < 0.36) {
-            yardsGained = Math.floor(22 + Math.random() * 22);
+          if (roll < 0.4) {
+            yardsGained = Math.floor(22 + Math.random() * 20);
           } else if (roll < 0.88) {
             outcomeType = "incomplete";
             yardsGained = 0;
@@ -1456,37 +2109,31 @@
             yardsGained = 25;
           }
         } else if (type === "fg" || type === "xp") {
-          // Real NFL Field Goal distance = yards to goal line + 10 yds endzone + 7 yds snap = (50 - startX) + 17
           const kickDist = Math.round(50 - startX + 17);
           const makeProb =
             type === "xp"
-              ? 0.95
-              : kickDist <= 42
+              ? 0.96
+              : kickDist <= 45
                 ? 0.9
-                : kickDist <= 54
+                : kickDist <= 55
                   ? 0.72
-                  : kickDist <= 62
-                    ? 0.38
-                    : 0.08;
+                  : 0.25;
           outcomeType = Math.random() < makeProb ? "fg_good" : "fg_miss";
           ballArcPeak = 13.5;
-          carrierEndZ = outcomeType === "fg_good" ? 0 : 5.8; // Wide right on miss!
+          carrierEndZ = outcomeType === "fg_good" ? 0 : 5.8;
         } else if (type === "punt") {
           outcomeType = "punt";
-          yardsGained = Math.min(44, 50 - startX - 5);
+          yardsGained = Math.min(42, 50 - startX - 5);
           ballArcPeak = 16;
         } else if (type === "two_pt") {
-          // 2-Point play from OPP 2 (X = 48): ~48% success rate
-          const success = Math.random() < 0.5;
+          const success = Math.random() < 0.55;
           yardsGained = success ? 4 : 0;
           passTargetPlayer = tePlayer;
           carrierEndZ = 3;
         }
 
-        // Clamp Touchdowns to Endzone depth
         const rawDestX = Math.min(54, startX + yardsGained);
 
-        // Assign player target positions for lively 3D animation
         players.forEach((p) => {
           p.startPos.copy(p.group.position);
           p.targetPos.copy(p.startPos);
@@ -1526,6 +2173,7 @@
         });
 
         activePlayAnim = {
+          mode: "sim",
           type,
           outcomeType,
           startX,
@@ -1537,18 +2185,84 @@
           startTime: performance.now(),
           duration:
             type === "deep_pass" || type === "fg" || type === "punt"
-              ? 2100
+              ? 2000
               : 1550,
         };
       }
 
       function finishPlayResolution(anim) {
         gameState.animating = false;
-        setPlayButtonsDisabled(false);
+        setAllSimButtonsDisabled(false);
 
+        if (anim.mode === "step1_march") {
+          showBanner(
+            "TOUCHDOWN! (+6 PTS)",
+            "Marching the ball into the Opponent's Red End Zone is the main goal of Football!",
+            3000,
+          );
+          return;
+        }
+
+        if (anim.mode === "scripted") {
+          const { demoKind, yardsGained } = anim;
+          if (demoKind === "demo_run") {
+            gameState.losX += yardsGained;
+            resetFormationToLOS();
+            showBanner(
+              "RUN PLAY (+6 YARDS)",
+              "Tackled to the grass! Where his knee touched becomes the new Blue Starting Line.",
+              3000,
+            );
+            gameState.step2Note =
+              "Notice how the Blue Starting Line moved 6 yards forward! The play ended the exact moment the runner was tackled to the ground.";
+          } else if (demoKind === "demo_pass_complete") {
+            gameState.losX += yardsGained;
+            resetFormationToLOS();
+            showBanner(
+              "CAUGHT PASS! (+8 YARDS)",
+              "Receiver caught the ball in the air! Blue Starting Line moves 8 yards forward.",
+              3000,
+            );
+            gameState.step2Note =
+              "Complete Pass! The Quarterback threw the ball forward through the air, the Receiver caught it, and was tackled 8 yards upfield.";
+          } else if (demoKind === "demo_pass_incomplete") {
+            resetFormationToLOS();
+            showBanner(
+              "INCOMPLETE PASS (0 YARDS)",
+              "Ball hit the ground! Play stops and the Blue Starting Line does NOT move.",
+              3000,
+            );
+            gameState.step2Note =
+              "Incomplete Pass! Because the thrown ball hit the grass without being caught, you gain 0 yards and return right back to the previous Blue Line.";
+          } else if (demoKind === "score_td") {
+            showBanner(
+              "TOUCHDOWN! (+6 POINTS)",
+              "Ball crossed into the Red End Zone! Now you earn a bonus try (+1 kick or +2 play).",
+              3200,
+            );
+            resetFormationToLOS();
+          } else if (demoKind === "score_fg") {
+            showBanner(
+              "FIELD GOAL! (+3 POINTS)",
+              "Kicked right between the tall yellow uprights!",
+              3000,
+            );
+            resetFormationToLOS();
+          } else if (demoKind === "score_2pt") {
+            showBanner(
+              "2-POINT CONVERSION! (+2 PTS)",
+              "Scored from the 2-yard line! (6 + 2 = 8 total points!)",
+              3000,
+            );
+            resetFormationToLOS();
+          }
+          renderPanel();
+          return;
+        }
+
+        // Standard Simulation Resolution (Step 3 & Step 6)
         const { type, outcomeType, startX, yardsGained } = anim;
 
-        // 1. Handle Post-Touchdown Conversion Attempts (1-pt XP or 2-pt Try)
         if (gameState.awaitingConversion) {
           gameState.awaitingConversion = false;
           if (type === "xp") {
@@ -1556,31 +2270,27 @@
               gameState.scoreYou += 1;
               showBanner(
                 "EXTRA POINT GOOD! (+1)",
-                "Ball split the uprights! Starting a new drive.",
+                "6 + 1 = 7 Total Points! Starting a new drive.",
               );
               gameState.coachMessage =
-                "Extra Point GOOD (+1 pt)! That brings a standard Touchdown drive to 7 points total. Starting your next possession at your Own 25!";
+                "Extra Point GOOD (+1 pt)! That's why Touchdowns almost always equal 7 points on TV. Starting your next drive at your Own 25!";
             } else {
-              showBanner(
-                "EXTRA POINT MISSED!",
-                "Wide right! Score stays at +6.",
-              );
-              gameState.coachMessage =
-                "Missed Extra Point! Even in the NFL, the 33-yard kick is missed about 5% of the time.";
+              showBanner("EXTRA POINT MISSED!", "Score stays at +6.");
+              gameState.coachMessage = "Missed Extra Point! Starting a new drive.";
             }
           } else if (type === "two_pt") {
             if (yardsGained >= 2) {
               gameState.scoreYou += 2;
               showBanner(
                 "2-POINT CONVERSION! (+2)",
-                "You crossed the goal line! +8 total points on the drive!",
+                "6 + 2 = 8 Total Points!",
               );
               gameState.coachMessage =
-                "HUGE 2-Point Conversion (+2 pts)! Coaches use this riskier play when trailing by 2 or 8 points late in a game.";
+                "2-Point Conversion GOOD (+2 pts)! Starting your next drive!";
             } else {
               showBanner("2-PT TRY STOPPED!", "Defense held at the goal line!");
               gameState.coachMessage =
-                "Stopped short! Going for 2 doubles the bonus points, but fails roughly half the time.";
+                "Stopped short on the 2-point try! Starting your next drive.";
             }
           }
           startFreshDrive(-25);
@@ -1588,67 +2298,66 @@
           return;
         }
 
-        // 2. Handle Field Goal Attempt (3 Points)
         if (type === "fg") {
           const kickDist = Math.round(50 - startX + 17);
           if (outcomeType === "fg_good") {
             gameState.scoreYou += 3;
             showBanner(
-              `FIELD GOAL GOOD! (+3 PTS)`,
-              `${kickDist}-yard kick sailed right between the yellow uprights!`,
+              "FIELD GOAL GOOD! (+3 PTS)",
+              `${kickDist}-yard kick sailed through the yellow uprights!`,
             );
-            gameState.coachMessage = `BANG! Good from ${kickDist} yards (+3 points)! When a drive stalls on 4th down within ~40 yards of the end zone, kicking 3 points is way smarter than risking 0.`;
+            gameState.coachMessage = `GOOD from ${kickDist} yards (+3 points)! When you reach 4th down near the opponent's end of the field, taking 3 points is smart football.`;
           } else {
             showBanner(
-              `NO GOOD (${kickDist} YDS)`,
-              "Missed wide right! Opponent takes over.",
+              `MISSED ${kickDist}-YD KICK`,
+              "Wide right! Opponent takes over.",
             );
-            gameState.coachMessage = `Missed the ${kickDist}-yard Field Goal! Whenever you miss a Field Goal, the opponent gets the ball right where you kicked from. Starting a fresh practice drive!`;
+            gameState.coachMessage = `Missed the ${kickDist}-yard Field Goal! Pro kickers rarely make kicks longer than 55 yards. Starting a fresh drive!`;
           }
           startFreshDrive(-25);
           renderPanel();
           return;
         }
 
-        // 3. Handle Punt
         if (type === "punt") {
           const pinnedAt = Math.max(5, 50 - (startX + yardsGained));
           showBanner(
-            "BOOM! 42-YD PUNT",
-            `Opponent pinned back at their own ${Math.round(pinnedAt)}-yard line!`,
+            "42-YARD PUNT!",
+            `You kicked the ball away so the opponent has to start way back at their ${Math.round(pinnedAt)}-yard line!`,
           );
-          gameState.coachMessage = `Smart Punt! Instead of risking a failed 4th down in your own territory, you kicked the ball deep so the opponent has to travel ~${Math.round(100 - pinnedAt)} yards. Starting a new drive for you!`;
+          gameState.coachMessage =
+            "Smart Punt on 4th Down! Since you were too far to kick a Field Goal, punting forces the other team to start deep in their own territory. Starting a fresh drive for you!";
           startFreshDrive(-25);
           renderPanel();
           return;
         }
 
-        // 4. Handle Interception (Turnover!)
         if (outcomeType === "interception") {
           gameState.scoreOpp += 3;
           showBanner(
-            "INTERCEPTED!",
-            "Turnover! Defense caught your deep pass!",
+            "INTERCEPTED! (TURNOVER)",
+            "A red defender caught your long throw! Other team gets the ball.",
           );
           gameState.coachMessage =
-            "INTERCEPTION! Throwing deep into double-coverage is risky—if a defender catches the pass, their team immediately steals possession (+3 simulated pts for Defense). Try a new drive!";
+            "INTERCEPTION! Long throws are exciting, but if a defender catches it, their team steals the ball immediately. Starting a new drive!";
           startFreshDrive(-25);
           renderPanel();
           return;
         }
 
-        // 5. Handle Incomplete Pass
         if (outcomeType === "incomplete") {
-          showBanner("INCOMPLETE PASS", "0 yards gained — costs 1 down.");
+          showBanner(
+            "INCOMPLETE PASS (0 YDS)",
+            "Ball hit the ground — you gain 0 yards and use up 1 try (down).",
+          );
           advanceDownAndDistance(
             0,
-            "Incomplete pass! When a thrown ball hits the ground, the play ends with 0 yards gained, the game clock stops, and you use up one down.",
+            "Incomplete pass (0 yards gained, used 1 try).",
           );
           renderPanel();
           return;
         }
 
-        // 6. Normal Run or Completed Pass
         advanceDownAndDistance(yardsGained);
         renderPanel();
       }
@@ -1656,55 +2365,51 @@
       function advanceDownAndDistance(yardsGained, customNote = null) {
         gameState.losX += yardsGained;
 
-        // Check TOUCHDOWN! (Ball reaches X >= 50, Opponent's End Zone!)
+        // Check TOUCHDOWN
         if (gameState.losX >= 50) {
           gameState.scoreYou += 6;
           gameState.awaitingConversion = true;
-          gameState.losX = 35; // Spot for XP visual, or 48 for 2-pt
+          gameState.losX = 35;
           showBanner(
             "TOUCHDOWN! (+6 PTS)",
-            "Now choose: Kick 1-Pt Extra Point or Go for 2 Points!",
-            3600,
+            "Now choose your bonus play below: +1 Kick or +2 Play!",
+            3500,
           );
           gameState.coachMessage =
-            "TOUCHDOWN (+6 Points)! After every Touchdown, you get ONE bonus play: kick a safe 1-point Extra Point, or run one play from the 2-yard line for 2 points!";
+            "TOUCHDOWN (+6 Points)! Now choose your bonus play at the bottom: kick an easy 1-point Extra Point, or try a 2-point play from the 2-yard line!";
+          gameState.step3Note =
+            "TOUCHDOWN! You marched all the way into the End Zone!";
           resetFormationToLOS();
-          if (gameState.activeTab === "downs") applyCameraPreset("endzone");
+          if (gameState.activeTab === "step6") applyCameraPreset("endzone");
           return;
         }
 
-        // Check Safety (Tackled in own End Zone X <= -50)
-        if (gameState.losX <= -50) {
-          gameState.scoreOpp += 2;
-          showBanner("SAFETY! (+2 DEFENSE)", "Tackled in your own End Zone!");
-          gameState.coachMessage =
-            "SAFETY! Getting tackled inside your own End Zone gives the Defense 2 points AND the ball!";
-          startFreshDrive(-25);
-          return;
-        }
-
-        // Check FIRST DOWN! (Reached or passed the Yellow Line!)
+        // Check FIRST DOWN (Crossed the Yellow Line!)
         if (gameState.losX >= gameState.firstDownX) {
           gameState.down = 1;
           gameState.firstDownX = Math.min(50, gameState.losX + 10);
           showBanner(
-            "1ST DOWN!",
-            `Gained ${yardsGained} yds! Fresh set of 4 downs!`,
-            2000,
+            "FIRST DOWN! (RESET TO TRY #1)",
+            `You gained ${yardsGained} yards and crossed the Yellow Line! You earn 4 brand-new tries!`,
+            2600,
           );
-          gameState.coachMessage = `FIRST DOWN (+${yardsGained} yds)! Because you crossed the Yellow Line, the counter resets to 1st Down with a brand-new 10-yard target! This is how offenses march down the field.`;
+          const msg = `BINGO — FIRST DOWN (+${yardsGained} yds)! Because you crossed the Yellow Line, your counter resets back to Try #1 (1st Down) and the Yellow Line moves 10 yards further downfield!`;
+          gameState.coachMessage = msg;
+          gameState.step3Note = msg;
         } else {
-          // Did not reach yellow line -> increment down
           gameState.down += 1;
 
           if (gameState.down > 4) {
-            // Turnover on Downs!
             gameState.scoreOpp += 3;
             showBanner(
-              "TURNOVER ON DOWNS!",
-              "Used all 4 downs without reaching the Yellow Line!",
+              "OUT OF TRIES! (TURNOVER)",
+              "You used all 4 tries without reaching the Yellow Line! The other team gets the ball.",
+              3200,
             );
-            gameState.coachMessage = `TURNOVER ON DOWNS! You failed to reach the Yellow Line on 4th down, so the opponent takes over right here! That is why teams almost always Punt or Kick a Field Goal on 4th down.`;
+            const msg =
+              "You used all 4 tries without reaching the Yellow Line ('Turnover on Downs'). That's why teams almost always Punt or Kick a Field Goal on Try #4! Resetting to Try #1.";
+            gameState.coachMessage = msg;
+            gameState.step3Note = msg;
             startFreshDrive(-25);
             return;
           }
@@ -1714,25 +2419,32 @@
               ? "the End Zone"
               : `${Math.round(gameState.firstDownX - gameState.losX)} more yards`;
           if (customNote) {
-            gameState.coachMessage = `${customNote} Now it is ${formatOrdinal(gameState.down)} down—you need ${needed}.`;
+            const msg = `${customNote} You are now on Try #${gameState.down} of 4 and still need ${needed} to reach the Yellow Line.`;
+            gameState.coachMessage = msg;
+            gameState.step3Note = msg;
           } else if (gameState.down === 4) {
             const fgRange = gameState.losX >= 12;
-            gameState.coachMessage = `ALERT — IT'S 4TH DOWN! Gain ${needed} or lose the ball right here! ${
+            const msg = `CAREFUL — IT IS TRY #4 OF 4 (4th Down)! You need ${needed}. If you fail on this play, the other team takes the ball right here! ${
               fgRange
-                ? "You are close enough to KICK A FIELD GOAL for 3 points!"
-                : "You are far from the end zone—coaches usually PUNT here to pin the opponent deep!"
+                ? "Coach recommends kicking a 3-Point Field Goal!"
+                : "Coach recommends Punting (kicking the ball far away)!"
             }`;
+            gameState.coachMessage = msg;
+            gameState.step3Note = msg;
           } else {
-            const sign =
-              yardsGained >= 0 ? `+${yardsGained}` : `${yardsGained}`;
-            gameState.coachMessage = `Play gained ${sign} yards. It is now ${formatOrdinal(gameState.down)} down and you need ${needed} to cross the Yellow Line.`;
+            const msg = `Nice gain of +${yardsGained} yards! Notice the Blue Line moved closer to the Yellow Line. You are now on Try #${gameState.down} of 4 and only need ${needed}!`;
+            gameState.coachMessage = msg;
+            gameState.step3Note = msg;
           }
         }
 
         resetFormationToLOS();
-        if (gameState.activeTab === "downs") {
+        if (
+          gameState.activeTab === "step3" ||
+          gameState.activeTab === "step6"
+        ) {
           flyCameraTo(
-            [gameState.losX - 6, 22, 38],
+            [gameState.losX - 5, 22, 38],
             [gameState.losX + 6, 0, 0],
             650,
           );
@@ -1745,31 +2457,40 @@
         gameState.down = 1;
         gameState.awaitingConversion = false;
         resetFormationToLOS();
-        if (gameState.activeTab === "downs") {
+        if (
+          gameState.activeTab === "step3" ||
+          gameState.activeTab === "step6"
+        ) {
           flyCameraTo(
-            [gameState.losX - 6, 22, 38],
+            [gameState.losX - 5, 22, 38],
             [gameState.losX + 6, 0, 0],
-            800,
+            750,
           );
         }
       }
 
       // =========================================================================
-      // 9. UI MODULE RENDERING & INTERACTIVITY
+      // 9. UI RENDERING FOR THE 6 PROGRESSIVE BEGINNER STEPS
       // =========================================================================
       const sidePanel = document.getElementById("side-panel");
-      const playControls = document.getElementById("play-controls");
 
       function setZoneHighlight(
         visible,
         x = 0,
         width = 10,
         colorHex = 0xfacc15,
+        labelText = "",
       ) {
-        zoneHighlight.material.opacity = visible ? 0.28 : 0;
+        zoneHighlight.material.opacity = visible ? 0.3 : 0;
         zoneHighlight.material.color.setHex(colorHex);
         zoneHighlight.scale.x = width / 10;
         zoneHighlight.position.x = x;
+        if (visible && labelText) {
+          zoneLabelEl.style.display = "block";
+          zoneLabelEl.textContent = labelText;
+        } else {
+          zoneLabelEl.style.display = "none";
+        }
       }
 
       function selectPositionGroup(groupKey) {
@@ -1780,9 +2501,11 @@
           p.ring.material.opacity = isMatch ? 0.95 : 0;
           p.tag.classList.toggle("highlighted", isMatch);
         });
-        if (gameState.activeTab === "players") {
+        if (gameState.activeTab === "step5") {
           renderPanel();
-          const sample = players.find((p) => p.roleKey === groupKey);
+          const sample = players.find(
+            (p) => p.roleKey === groupKey && p.group.visible,
+          );
           if (sample) {
             flyCameraTo(
               [sample.group.position.x - 10, 11, sample.group.position.z + 14],
@@ -1797,34 +2520,144 @@
         players.forEach((p) => {
           p.body.material = p.baseMat;
           p.ring.material.opacity = 0;
-          p.tag.style.display = "none";
         });
       }
 
+      function buildStepHeader(stepNum, title) {
+        const dots = STEP_ORDER.map((_, idx) => {
+          const cls =
+            idx + 1 === stepNum ? "active" : idx + 1 < stepNum ? "done" : "";
+          return `<span class="progress-dot ${cls}"></span>`;
+        }).join("");
+
+        return `
+          <div class="step-header-row">
+            <span class="module-tag">Step ${stepNum} of 6 • Beginner Path</span>
+            <div class="progress-dots">${dots}</div>
+          </div>
+          <h2 class="panel-title">${title}</h2>
+        `;
+      }
+
+      function buildStepFooter(stepNum) {
+        const prevDisabled = stepNum === 1 ? "disabled" : "";
+        const nextLabel =
+          stepNum < 6
+            ? `Next: ${
+                [
+                  "",
+                  "What is a Play? →",
+                  "The 4-Tries Rule →",
+                  "How You Score →",
+                  "Player Jobs →",
+                  "Play a Live Drive! →",
+                ][stepNum]
+              }`
+            : "Restart Tour ↺";
+
+        return `
+          <div class="step-nav-footer">
+            <button class="step-nav-btn" id="prev-step-btn" ${prevDisabled}>← Back</button>
+            <button class="step-nav-btn primary" id="next-step-btn">${nextLabel}</button>
+          </div>
+        `;
+      }
+
+      function attachStepFooterListeners(stepNum) {
+        const prevBtn = document.getElementById("prev-step-btn");
+        const nextBtn = document.getElementById("next-step-btn");
+        if (prevBtn && stepNum > 1) {
+          prevBtn.addEventListener("click", () =>
+            switchToTab(STEP_ORDER[stepNum - 2]),
+          );
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener("click", () => {
+            if (stepNum < 6) switchToTab(STEP_ORDER[stepNum]);
+            else switchToTab("step1");
+          });
+        }
+      }
+
+      function buildDownTrackerHTML() {
+        const dist =
+          gameState.firstDownX >= 50
+            ? "End Zone"
+            : `${Math.max(1, Math.round(gameState.firstDownX - gameState.losX))} yds needed`;
+        const pills = [1, 2, 3, 4]
+          .map((d) => {
+            const cls =
+              d < gameState.down
+                ? "used"
+                : d === gameState.down
+                  ? "current"
+                  : "";
+            return `<div class="down-pill ${cls}">Try #${d}</div>`;
+          })
+          .join("");
+        return `
+          <div class="down-dots-box">
+            <div class="down-dots-header">
+              <span>YOUR 4 TRIES ("DOWNS")</span>
+              <span>Target: ${dist}</span>
+            </div>
+            <div class="down-pills-row">${pills}</div>
+          </div>
+        `;
+      }
+
       function renderPlayBar() {
-        if (gameState.activeTab !== "downs") {
-          playControls.classList.remove("visible");
+        if (gameState.activeTab !== "step6") {
+          playControlsEl.classList.remove("visible");
           return;
         }
-        playControls.classList.add("visible");
+        playControlsEl.classList.add("visible");
 
         if (gameState.awaitingConversion) {
-          playControls.innerHTML = `
-          <button class="play-btn special" data-play="xp">Kick Extra Point<span>+1 Pt (95% Safe)</span></button>
-          <button class="play-btn special" data-play="two_pt">Go For 2 Points<span>+2 Pts (50% Risky)</span></button>
-        `;
+          playControlsEl.innerHTML = `
+            <button class="play-btn recommended" data-play="xp">
+              <span class="rec-tag">Recommended</span>
+              Kick Extra Point<span>+1 Pt (95% Easy Kick)</span>
+            </button>
+            <button class="play-btn" data-play="two_pt">
+              Go For 2 Points<span>+2 Pts (50% Risky Play)</span>
+            </button>
+          `;
         } else {
           const kickDist = Math.round(50 - gameState.losX + 17);
-          playControls.innerHTML = `
-          <button class="play-btn" data-play="run">Inside Run<span>Safe: 3–7 yds</span></button>
-          <button class="play-btn" data-play="short_pass">Short Pass<span>Med: 5–12 yds</span></button>
-          <button class="play-btn" data-play="deep_pass">Deep Bomb<span>High Risk: 22–44 yds</span></button>
-          <button class="play-btn special" data-play="fg">Field Goal (3 Pts)<span>${kickDist}-yd Kick</span></button>
-          <button class="play-btn special" data-play="punt">Punt Away<span>4th Down Safety</span></button>
-        `;
+          const isFourth = gameState.down === 4;
+          const inFgRange = gameState.losX >= 12;
+
+          const recRun = !isFourth && gameState.down === 1;
+          const recShort =
+            !isFourth && (gameState.down === 2 || gameState.down === 3);
+          const recFg = isFourth && inFgRange;
+          const recPunt = isFourth && !inFgRange;
+
+          playControlsEl.innerHTML = `
+            <button class="play-btn ${recRun ? "recommended" : ""}" data-play="run">
+              ${recRun ? '<span class="rec-tag">Coach Pick</span>' : ""}
+              Run the Ball<span>Safe: Gains ~3–7 yds</span>
+            </button>
+            <button class="play-btn ${recShort ? "recommended" : ""}" data-play="short_pass">
+              ${recShort ? '<span class="rec-tag">Coach Pick</span>' : ""}
+              Short Throw<span>Medium: Gains ~5–12 yds</span>
+            </button>
+            <button class="play-btn" data-play="deep_pass">
+              Long Throw<span>Risky: 22–42 yds</span>
+            </button>
+            <button class="play-btn ${recFg ? "recommended" : ""}" data-play="fg">
+              ${recFg ? '<span class="rec-tag">4th Down Pick!</span>' : ""}
+              Kick Field Goal (3 Pts)<span>${kickDist}-yd Kick</span>
+            </button>
+            <button class="play-btn ${recPunt ? "recommended" : ""}" data-play="punt">
+              ${recPunt ? '<span class="rec-tag">4th Down Pick!</span>' : ""}
+              Punt (Kick Away)<span>Safe on Try #4</span>
+            </button>
+          `;
         }
 
-        playControls.querySelectorAll(".play-btn").forEach((btn) => {
+        playControlsEl.querySelectorAll(".play-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const playType = btn.dataset.play;
             if (playType === "two_pt") {
@@ -1840,59 +2673,52 @@
       function renderPanel() {
         const tab = gameState.activeTab;
         renderPlayBar();
+        syncSceneToCurrentStep();
 
-        // MODULE 1: THE FIELD & SCORING
-        if (tab === "field") {
+        // =====================================================================
+        // STEP 1: THE GOAL & THE FIELD (ZERO PLAYERS, ZERO CLUTTER)
+        // =====================================================================
+        if (tab === "step1") {
           clearPlayerHighlights();
           sidePanel.innerHTML = `
-          <span class="module-tag">Module 1 of 4</span>
-          <h2 class="panel-title">The Gridiron & How Teams Score</h2>
-          <p class="panel-desc">
-            American Football is a game of <strong>territory</strong>. Two teams battle across a <strong>100-yard grass field</strong> flanked by two 10-yard <strong>End Zones</strong>. Click any card below to inspect it in 3D:
-          </p>
-          <div class="info-grid">
-            <div class="info-card" data-tour="touchdown">
-              <div class="info-card-header">
-                <span class="info-card-title">Touchdown (End Zone)</span>
-                <span class="badge badge-gold">6 POINTS</span>
-              </div>
-              <p>Carry the ball into the opponent's Red End Zone or catch a pass while both feet land inside it.</p>
+            ${buildStepHeader(1, "The Core Goal: Conquer Territory")}
+            <div class="analogy-box">
+              <strong>The 10-Second Summary</strong>
+              <p>Two teams take turns with an oval ball. The team with the ball (<strong>Offense</strong>, in Blue) tries to carry or throw it down the grass into the opponent's <strong>Red End Zone</strong>. The other team (<strong>Defense</strong>, in Red) tries to stop them!</p>
             </div>
+            <p class="panel-desc">
+              We stripped away all 22 players so you can see the field clearly. Click any card below to highlight it on the 3D field:
+            </p>
+            <div class="info-grid">
+              <div class="info-card selected" data-tour="march">
+                <div class="info-card-header">
+                  <span class="info-card-title">1. The 100-Yard March</span>
+                  <span class="badge badge-gold">THE GOAL</span>
+                </div>
+                <p>The green field is <strong>100 yards long</strong> (~91 meters, about the length of a soccer pitch). Follow the yellow arrow from left to right!</p>
+                <span class="action-demo-btn">▶ Watch Ball March to End Zone</span>
+              </div>
 
-            <div class="info-card" data-tour="conversion">
-              <div class="info-card-header">
-                <span class="info-card-title">Extra Point vs. 2-Pt Try</span>
-                <span class="badge badge-green">+1 OR +2 PTS</span>
+              <div class="info-card" data-tour="endzones">
+                <div class="info-card-header">
+                  <span class="info-card-title">2. The Two End Zones</span>
+                  <span class="badge badge-red">SCORE HERE</span>
+                </div>
+                <p>At each end is a 10-yard painted box. Defend your <strong>Blue End Zone</strong> on the left; carry or catch the ball inside the <strong>Red End Zone</strong> on the right to score!</p>
               </div>
-              <p>Right after a Touchdown, choose: kick through the yellow uprights (+1 pt) or run one play from the 2-yard line (+2 pts). That's why Touchdowns usually equal <strong>7 points</strong>!</p>
-            </div>
 
-            <div class="info-card" data-tour="fieldgoal">
-              <div class="info-card-header">
-                <span class="info-card-title">Field Goal (Yellow Uprights)</span>
-                <span class="badge badge-gold">3 POINTS</span>
+              <div class="info-card" data-tour="numbers">
+                <div class="info-card-header">
+                  <span class="info-card-title">3. Why Numbers Go 10 → 50 → 10</span>
+                  <span class="badge badge-blue">MIDFIELD = 50</span>
+                </div>
+                <p>Every white line is 5 yards apart. The numbers count up to the <strong>50-yard line</strong> at the exact middle, then count <em>down</em> (40, 30, 20, 10) telling you how many yards are left to score!</p>
               </div>
-              <p>If your offense gets close (~35 yards out) but gets stopped, kick the ball over the yellow crossbar for 3 points.</p>
             </div>
+            ${buildStepFooter(1)}
+          `;
 
-            <div class="info-card" data-tour="redzone">
-              <div class="info-card-header">
-                <span class="info-card-title">The "Red Zone" (Inside the 20)</span>
-                <span class="badge badge-red">20 YD SCORING ZONE</span>
-              </div>
-              <p>The final 20 yards before the opponent's End Zone. Space gets super cramped here, making Touchdowns tough!</p>
-            </div>
-
-            <div class="info-card" data-tour="safety">
-              <div class="info-card-header">
-                <span class="info-card-title">Safety (Rare Defensive Score)</span>
-                <span class="badge badge-blue">2 POINTS</span>
-              </div>
-              <p>If the Defense tackles the Offense inside the Offense's <em>own</em> Blue End Zone, the Defense gets 2 points AND the ball!</p>
-            </div>
-          </div>
-          <p class="hint-footer">Tip: Drag to rotate 3D camera • Scroll to zoom</p>
-        `;
+          attachStepFooterListeners(1);
 
           sidePanel.querySelectorAll(".info-card").forEach((card) => {
             card.addEventListener("click", () => {
@@ -1901,30 +2727,216 @@
                 .forEach((c) => c.classList.remove("selected"));
               card.classList.add("selected");
               const tour = card.dataset.tour;
-              if (tour === "touchdown") {
-                setZoneHighlight(true, 55, 10, 0xef4444);
-                flyCameraTo([32, 22, 30], [55, 0, 0]);
-              } else if (tour === "conversion") {
-                setZoneHighlight(true, 49, 2, 0x22c55e);
-                flyCameraTo([36, 12, 16], [56, 4, 0]);
-              } else if (tour === "fieldgoal") {
-                setZoneHighlight(false);
-                flyCameraTo([38, 10, 12], [60, 7, 0]);
-              } else if (tour === "redzone") {
-                setZoneHighlight(true, 40, 20, 0xfacc15);
-                flyCameraTo([28, 32, 38], [42, 0, 0]);
-              } else if (tour === "safety") {
-                setZoneHighlight(true, -55, 10, 0x3b82f6);
-                flyCameraTo([-32, 22, 30], [-55, 0, 0]);
+              if (tour === "march") {
+                runStep1MarchDemo();
+              } else if (tour === "endzones") {
+                setZoneHighlight(
+                  true,
+                  55,
+                  10,
+                  0xef4444,
+                  "OPPONENT END ZONE (REACH HERE TO SCORE!)",
+                );
+                flyCameraTo([28, 26, 36], [52, 0, 0]);
+              } else if (tour === "numbers") {
+                setZoneHighlight(
+                  true,
+                  0,
+                  2,
+                  0xfacc15,
+                  "50-YARD LINE (EXACT MIDDLE OF FIELD)",
+                );
+                flyCameraTo([0, 42, 46], [0, 0, 0]);
               }
             });
           });
         }
 
-        // MODULE 2: THE 22 PLAYERS
-        else if (tab === "players") {
+        // =====================================================================
+        // STEP 2: WHAT IS A "PLAY"? (RUN VS. PASS WITH ONLY 6 PLAYERS)
+        // =====================================================================
+        else if (tab === "step2") {
           setZoneHighlight(false);
-          players.forEach((p) => (p.tag.style.display = "block"));
+          clearPlayerHighlights();
+          sidePanel.innerHTML = `
+            ${buildStepHeader(2, 'How a Single "Play" Works')}
+            <div class="analogy-box">
+              <strong>Why Do Players Keep Stopping?</strong>
+              <p>Unlike soccer or basketball, football is <strong>not continuous</strong>. It is played in short 5-second bursts called <strong>"Plays"</strong>. Every play starts at the <strong>Blue Starting Line</strong> and ends the instant the person with the ball is tackled to the grass!</p>
+            </div>
+            <div class="coach-box">
+              <strong>Live 3D Sandbox (6 Players Shown)</strong>
+              ${gameState.step2Note}
+            </div>
+            <div class="info-grid">
+              <div class="info-card" id="btn-demo-run">
+                <div class="info-card-header">
+                  <span class="info-card-title">Way #1: Run with the Ball</span>
+                  <span class="badge badge-green">SAFE & STEADY</span>
+                </div>
+                <p>The Center hands the ball between his legs ("The Snap") to the Quarterback, who hands it to the <strong>Runner</strong>. Where the runner is tackled becomes the <strong>new Blue Starting Line</strong>!</p>
+                <span class="action-demo-btn">▶ Animate a Run Play (+6 yds)</span>
+              </div>
+
+              <div class="info-card" id="btn-demo-pass">
+                <div class="info-card-header">
+                  <span class="info-card-title">Way #2: Throw a Forward Pass</span>
+                  <span class="badge badge-blue">BIGGER GAINS</span>
+                </div>
+                <p>The Quarterback can throw the ball forward <strong>once per play</strong>. If a teammate catches it in the air, they keep running until tackled!</p>
+                <span class="action-demo-btn">▶ Animate a Caught Pass (+8 yds)</span>
+              </div>
+
+              <div class="info-card" id="btn-demo-inc">
+                <div class="info-card-header">
+                  <span class="info-card-title">What if a Throw Hits the Ground?</span>
+                  <span class="badge badge-gold">INCOMPLETE = 0 YDS</span>
+                </div>
+                <p>If a forward throw touches the ground before anyone catches it, it's an <strong>Incomplete Pass</strong>. The play stops immediately and the Blue Line stays right where it was!</p>
+                <span class="action-demo-btn">▶ Animate an Incomplete Pass (0 yds)</span>
+              </div>
+            </div>
+            ${buildStepFooter(2)}
+          `;
+
+          attachStepFooterListeners(2);
+          document
+            .getElementById("btn-demo-run")
+            .addEventListener("click", () => runScriptedDemo("demo_run"));
+          document
+            .getElementById("btn-demo-pass")
+            .addEventListener("click", () =>
+              runScriptedDemo("demo_pass_complete"),
+            );
+          document
+            .getElementById("btn-demo-inc")
+            .addEventListener("click", () =>
+              runScriptedDemo("demo_pass_incomplete"),
+            );
+        }
+
+        // =====================================================================
+        // STEP 3: THE 4-TRIES ("DOWNS") RULE & THE YELLOW LINE
+        // =====================================================================
+        else if (tab === "step3") {
+          setZoneHighlight(false);
+          clearPlayerHighlights();
+          sidePanel.innerHTML = `
+            ${buildStepHeader(3, "The Secret of Football: 4 Tries for 10 Yards")}
+            <div class="analogy-box">
+              <strong>Why is There a Yellow Line on TV?</strong>
+              <p>Going 100 yards in one play is almost impossible. So football gives you <strong>4 tries (called "Downs") to gain just 10 yards</strong>—from the <strong>Blue Line</strong> to the <strong>Yellow Line</strong>. Cross the Yellow Line, and your counter resets back to Try #1!</p>
+            </div>
+            ${buildDownTrackerHTML()}
+            <div class="coach-box">
+              <strong>Try It Yourself: Cross the Yellow Line!</strong>
+              ${gameState.step3Note}
+            </div>
+            <div class="info-grid">
+              <button class="step-nav-btn primary sim-trigger-btn" id="s3-run-btn" style="text-align:left; padding:10px 12px;">
+                🏃 Call a Run Play (+4 Yards)
+                <span style="display:block; font-size:0.72rem; font-weight:500; opacity:0.9; margin-top:2px;">Moves the Blue Line 4 yards closer to the Yellow Line</span>
+              </button>
+              <button class="step-nav-btn primary sim-trigger-btn" id="s3-pass-btn" style="text-align:left; padding:10px 12px; background:#0284c7;">
+                🏈 Call a Pass Play (+7 Yards)
+                <span style="display:block; font-size:0.72rem; font-weight:500; opacity:0.9; margin-top:2px;">Crosses the Yellow Line to earn a fresh set of 4 tries!</span>
+              </button>
+              <button class="step-nav-btn sim-trigger-btn" id="s3-punt-btn" style="text-align:left; padding:9px 12px;">
+                🦵 What if it's Try #4? Punt (Kick It Far Away)
+                <span style="display:block; font-size:0.7rem; font-weight:500; color:var(--text-muted); margin-top:2px;">If you're stuck on Try #4 far from the goal, kick it deep so the opponent starts way back!</span>
+              </button>
+            </div>
+            ${buildStepFooter(3)}
+          `;
+
+          attachStepFooterListeners(3);
+          document
+            .getElementById("s3-run-btn")
+            .addEventListener("click", () => runSimulatedPlay("run", 4));
+          document
+            .getElementById("s3-pass-btn")
+            .addEventListener("click", () => runSimulatedPlay("short_pass", 7));
+          document
+            .getElementById("s3-punt-btn")
+            .addEventListener("click", () => runSimulatedPlay("punt"));
+        }
+
+        // =====================================================================
+        // STEP 4: HOW SCORING WORKS (WITH LIVE 3D SCORE ANIMATIONS)
+        // =====================================================================
+        else if (tab === "step4") {
+          setZoneHighlight(false);
+          clearPlayerHighlights();
+          sidePanel.innerHTML = `
+            ${buildStepHeader(4, "How Points Work (6, 7, 8, or 3)")}
+            <p class="panel-desc">
+              Ever wonder why football scores are weird numbers like <strong>14–10</strong> or <strong>24–17</strong>? Click each score below to watch it happen in 3D:
+            </p>
+            <div class="info-grid">
+              <div class="info-card selected" data-score="td">
+                <div class="info-card-header">
+                  <span class="info-card-title">1. Touchdown (The Big Goal)</span>
+                  <span class="badge badge-gold">6 POINTS</span>
+                </div>
+                <p>Run the ball into the Red End Zone, or catch a pass while inside it. Worth <strong>6 points</strong> AND unlocks a free bonus try right after!</p>
+                <span class="action-demo-btn">▶ Watch a Touchdown in 3D</span>
+              </div>
+
+              <div class="info-card" data-score="bonus">
+                <div class="info-card-header">
+                  <span class="info-card-title">2. The Post-Touchdown Bonus Try</span>
+                  <span class="badge badge-green">+1 OR +2 PTS</span>
+                </div>
+                <p>Right after every Touchdown, choose ONE bonus play: kick it over the yellow bar for <strong>+1 point</strong> (making a Touchdown worth <strong>7 pts</strong>!), or run one play from 2 yards out for <strong>+2 points</strong> (8 pts total).</p>
+                <span class="action-demo-btn">▶ Watch a 2-Point Bonus Play</span>
+              </div>
+
+              <div class="info-card" data-score="fg">
+                <div class="info-card-header">
+                  <span class="info-card-title">3. Field Goal (The 4th-Down Kick)</span>
+                  <span class="badge badge-gold">3 POINTS</span>
+                </div>
+                <p>If your drive gets stopped on Try #4 near the opponent's end zone (within ~35 yards), send in your kicker to boot the ball through the tall yellow posts for <strong>3 points</strong>!</p>
+                <span class="action-demo-btn">▶ Watch a 3-Point Field Goal Kick</span>
+              </div>
+            </div>
+            ${buildStepFooter(4)}
+          `;
+
+          attachStepFooterListeners(4);
+
+          sidePanel.querySelectorAll(".info-card").forEach((card) => {
+            card.addEventListener("click", () => {
+              sidePanel
+                .querySelectorAll(".info-card")
+                .forEach((c) => c.classList.remove("selected"));
+              card.classList.add("selected");
+              const kind = card.dataset.score;
+              if (kind === "td") {
+                gameState.losX = 42;
+                resetFormationToLOS();
+                flyCameraTo([28, 18, 28], [50, 0, 0], 600);
+                runScriptedDemo("score_td");
+              } else if (kind === "bonus") {
+                gameState.losX = 48;
+                resetFormationToLOS();
+                flyCameraTo([35, 14, 22], [52, 1, 0], 600);
+                runScriptedDemo("score_2pt");
+              } else if (kind === "fg") {
+                gameState.losX = 28;
+                resetFormationToLOS();
+                flyCameraTo([14, 14, 18], [58, 6, 0], 600);
+                runScriptedDemo("score_fg");
+              }
+            });
+          });
+        }
+
+        // =====================================================================
+        // STEP 5: MEET THE PLAYERS (LAYER BY LAYER SO IT'S NOT OVERWHELMING)
+        // =====================================================================
+        else if (tab === "step5") {
+          setZoneHighlight(false);
           const pData = POSITIONS_DATA[gameState.selectedPosGroup];
 
           const pillsHtml = Object.keys(POSITIONS_DATA)
@@ -1932,173 +2944,180 @@
               const sideCls =
                 POSITIONS_DATA[key].side === "Offense" ? "offense" : "defense";
               const actCls = key === gameState.selectedPosGroup ? "active" : "";
-              return `<button class="pos-pill ${sideCls} ${actCls}" data-pos="${key}">${key}</button>`;
+              return `<button class="pos-pill ${sideCls} ${actCls}" data-pos="${key}">${key} • ${POSITIONS_DATA[key].plainRole.split(" ")[1]}</button>`;
             })
             .join("");
 
           sidePanel.innerHTML = `
-          <span class="module-tag">Module 2 of 4</span>
-          <h2 class="panel-title">The 22 Specialists (11 vs. 11)</h2>
-          <p class="panel-desc">
-            Unlike soccer or basketball, almost nobody plays both Offense and Defense. Every player has a specialized body type and job. <strong>Click a position or 3D player:</strong>
-          </p>
-          <div class="position-pills">${pillsHtml}</div>
-          <div class="info-card selected" style="cursor:default;">
-            <div class="info-card-header">
-              <span class="info-card-title">${pData.name}</span>
-              <span class="badge ${pData.side === "Offense" ? "badge-blue" : "badge-red"}">${pData.side.toUpperCase()}</span>
+            ${buildStepHeader(5, "The 11 vs. 11 Player Jobs")}
+            <p class="panel-desc">
+              22 players look chaotic until you break them into <strong>3 simple groups</strong>. Click a group below to isolate those players on the 3D field:
+            </p>
+            <div class="layer-switcher">
+              <button class="layer-btn ${gameState.playerLayerFilter === "wall" ? "active" : ""}" data-layer="wall">
+                1. The Trench Wall<span>5 Blockers vs. 4 Rushers</span>
+              </button>
+              <button class="layer-btn ${gameState.playerLayerFilter === "skill" ? "active" : ""}" data-layer="skill">
+                2. Leaders & Runners<span>QB, Runner & Tacklers</span>
+              </button>
+              <button class="layer-btn ${gameState.playerLayerFilter === "outside" ? "active" : ""}" data-layer="outside">
+                3. Pass Catchers & Guards<span>Receivers & Deep Guards</span>
+              </button>
+              <button class="layer-btn ${gameState.playerLayerFilter === "all" ? "active" : ""}" data-layer="all">
+                Show All 22<span>Full 11 vs. 11 View</span>
+              </button>
             </div>
-            <p style="color:#fde047; font-weight:700; margin:4px 0;">${pData.summary}</p>
-            <p>${pData.details}</p>
-          </div>
-          <p class="hint-footer">Click any 3D helmet/jersey on the field to inspect!</p>
-        `;
+            <div class="position-pills">${pillsHtml}</div>
+            <div class="info-card selected" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">${pData.name}</span>
+                <span class="badge ${pData.side === "Offense" ? "badge-blue" : "badge-red"}">${pData.side.toUpperCase()}</span>
+              </div>
+              <p style="color:#fde047; font-weight:700; margin:3px 0;">${pData.plainRole} — ${pData.analogy}</p>
+              <p>${pData.details}</p>
+            </div>
+            <p class="hint-footer">Tip: Click any 3D player on the grass to inspect their job!</p>
+            ${buildStepFooter(5)}
+          `;
+
+          attachStepFooterListeners(5);
+
+          sidePanel.querySelectorAll(".layer-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              gameState.playerLayerFilter = btn.dataset.layer;
+              if (btn.dataset.layer === "wall")
+                selectPositionGroup("OL");
+              else if (btn.dataset.layer === "skill")
+                selectPositionGroup("QB");
+              else if (btn.dataset.layer === "outside")
+                selectPositionGroup("WR");
+              else renderPanel();
+            });
+          });
 
           sidePanel.querySelectorAll(".pos-pill").forEach((btn) => {
-            btn.addEventListener("click", () =>
-              selectPositionGroup(btn.dataset.pos),
-            );
+            btn.addEventListener("click", () => {
+              const posKey = btn.dataset.pos;
+              const targetLayer = POSITIONS_DATA[posKey].layer;
+              if (
+                gameState.playerLayerFilter !== "all" &&
+                gameState.playerLayerFilter !== targetLayer
+              ) {
+                gameState.playerLayerFilter = "all";
+              }
+              selectPositionGroup(posKey);
+            });
           });
         }
 
-        // MODULE 3: DOWNS & LIVE PLAY SIMULATOR
-        else if (tab === "downs") {
+        // =====================================================================
+        // STEP 6: PUT IT ALL TOGETHER — FULL LIVE DRIVE + TV SCOREBUG DECODER
+        // =====================================================================
+        else if (tab === "step6") {
           setZoneHighlight(false);
           clearPlayerHighlights();
           sidePanel.innerHTML = `
-          <span class="module-tag">Module 3 of 4 • Interactive Sim</span>
-          <h2 class="panel-title">The Secret of Football: 4 Downs</h2>
-          <div class="coach-box">
-            <strong>Coach's Live Headset</strong>
-            ${gameState.coachMessage}
-          </div>
-          <div class="info-grid">
-            <div class="info-card" style="cursor:default;">
-              <div class="info-card-header">
-                <span class="info-card-title">Blue Line = Line of Scrimmage</span>
-                <span class="badge badge-blue">START</span>
-              </div>
-              <p>Where the ball is spotted right now. Neither team can cross it until the ball is snapped.</p>
+            ${buildStepHeader(6, "You're the Coach: Call a Live Drive!")}
+            <div class="coach-box">
+              <strong>Coach's Headset</strong>
+              ${gameState.coachMessage}
             </div>
-            <div class="info-card" style="cursor:default;">
-              <div class="info-card-header">
-                <span class="info-card-title">Yellow Line = 1st Down Target</span>
-                <span class="badge badge-gold">+10 YARDS</span>
+            ${buildDownTrackerHTML()}
+            <div class="info-grid">
+              <div class="info-card" style="cursor:default;">
+                <div class="info-card-header">
+                  <span class="info-card-title">How to Read the TV Scorebar Below</span>
+                  <span class="badge badge-blue">TV DECODER</span>
+                </div>
+                <p>When TV says <strong>"2ND & 6"</strong>, it simply means: <strong>Try #2 of 4, and you need 6 more yards</strong> to reach the Yellow Line! Look at our live plain-English translation right inside the bottom scoreboard.</p>
               </div>
-              <p>You have <strong>4 plays ("downs")</strong> to reach this Yellow Line. Cross it, and you earn a brand-new <strong>1st & 10</strong>!</p>
+              <div class="info-card" id="throw-flag-card">
+                <div class="info-card-header">
+                  <span class="info-card-title">What is a Yellow Penalty Flag?</span>
+                  <span class="badge badge-gold">FOUL MARKER</span>
+                </div>
+                <p>If a player breaks a rule (like jumping across the Blue Line early or grabbing a jersey), referees toss a weighted yellow cloth onto the turf and move the ball back 5–10 yards.</p>
+                <span class="action-demo-btn">▶ Toss a Penalty Flag in 3D</span>
+              </div>
             </div>
-          </div>
-          <button class="tab-btn" id="jump-redzone-btn" style="width:100%; margin-top:12px; background:rgba(250,204,21,0.16); color:#fde047; border-color:rgba(250,204,21,0.4);">
-            Practice in Red Zone (1st & Goal at OPP 8)
-          </button>
-        `;
+            <button class="tab-btn" id="jump-redzone-btn" style="width:100%; margin-top:10px; background:rgba(250,204,21,0.16); color:#fde047; border-color:rgba(250,204,21,0.4);">
+              Skip Ahead to "1st & Goal" (8 Yards from Touchdown!)
+            </button>
+            ${buildStepFooter(6)}
+          `;
+
+          attachStepFooterListeners(6);
 
           document
-            .getElementById("jump-redzone-btn")
-            .addEventListener("click", () => {
-              gameState.losX = 42; // OPP 8 yard line
-              gameState.firstDownX = 50; // Goal line!
-              gameState.down = 1;
-              gameState.awaitingConversion = false;
-              gameState.coachMessage =
-                'Notice the Scorebug now says "1ST & GOAL"! Because the End Zone is only 8 yards away, there is no Yellow 10-yard line—your target IS the Touchdown!';
-              resetFormationToLOS();
-              flyCameraTo([28, 18, 28], [48, 0, 0]);
-              renderPanel();
-            });
-        }
-
-        // MODULE 4: STRATEGY, CLOCK & YELLOW FLAGS
-        else if (tab === "rules") {
-          setZoneHighlight(false);
-          clearPlayerHighlights();
-          sidePanel.innerHTML = `
-          <span class="module-tag">Module 4 of 4</span>
-          <h2 class="panel-title">The Chess Match & Yellow Flags</h2>
-          <p class="panel-desc">
-            Newcomers often ask: <em>"Why do they stop for 35 seconds after a 5-second play?"</em> Because football is <strong>high-speed chess</strong>—both coaches swap personnel and call secret formations before every snap!
-          </p>
-          <button class="tab-btn active" id="throw-flag-btn" style="width:100%; margin-bottom:12px; background:#eab308; color:#0f172a; font-weight:800;">
-            Throw a Yellow Penalty Flag on the Field!
-          </button>
-          <div class="info-grid">
-            <div class="info-card" style="cursor:default;">
-              <div class="info-card-header">
-                <span class="info-card-title">Offensive Holding</span>
-                <span class="badge badge-gold">-10 YARDS</span>
-              </div>
-              <p>Linemen can push and block with open hands inside the shoulders, but <strong>grabbing/tackling</strong> a defender trying to sack the QB draws a 10-yard penalty.</p>
-            </div>
-            <div class="info-card" style="cursor:default;">
-              <div class="info-card-header">
-                <span class="info-card-title">False Start vs. Offsides</span>
-                <span class="badge badge-gold">5 YARDS</span>
-              </div>
-              <p><strong>False Start:</strong> An offensive player flinches before the snap (-5 yds). <strong>Offsides:</strong> A defender jumps across the Blue Line early (+5 yds for Offense).</p>
-            </div>
-            <div class="info-card" style="cursor:default;">
-              <div class="info-card-header">
-                <span class="info-card-title">Pass Interference (DPI)</span>
-                <span class="badge badge-red">SPOT FOUL</span>
-              </div>
-              <p>While a pass is in the air, defenders cannot shove or grab the receiver before the ball arrives—otherwise the Offense gets the ball right at that spot!</p>
-            </div>
-            <div class="info-card" style="cursor:default;">
-              <div class="info-card-header">
-                <span class="info-card-title">4 Quarters × 15 Minutes</span>
-                <span class="badge badge-blue">CLOCK STRATEGY</span>
-              </div>
-              <p>Running plays keep the clock ticking (great when winning late!). Incomplete passes & running out-of-bounds <strong>stop the clock</strong> (essential for comebacks!).</p>
-            </div>
-          </div>
-        `;
-
-          document
-            .getElementById("throw-flag-btn")
+            .getElementById("throw-flag-card")
             .addEventListener("click", () => {
               penaltyFlag.visible = true;
               penaltyFlag.position.set(gameState.losX + 2, 12, 3);
               showBanner(
                 "FLAG ON THE PLAY!",
-                "Referees toss a weighted yellow cloth when a foul occurs—play finishes first!",
-                2800,
+                "Referees drop a yellow cloth where a foul happened (e.g., jumping across the Blue Line early = 5-yard penalty).",
+                3000,
               );
-              flyCameraTo(
-                [gameState.losX - 8, 12, 18],
-                [gameState.losX + 2, 1, 2],
-                600,
-              );
+            });
+
+          document
+            .getElementById("jump-redzone-btn")
+            .addEventListener("click", () => {
+              gameState.losX = 42;
+              gameState.firstDownX = 50;
+              gameState.down = 1;
+              gameState.awaitingConversion = false;
+              gameState.coachMessage =
+                'Look at the bottom scoreboard: it says "1ST & GOAL"! Because the Red End Zone is only 8 yards away, there is no Yellow 10-yard line—your target IS the End Zone!';
+              resetFormationToLOS();
+              flyCameraTo([28, 18, 28], [48, 0, 0]);
+              renderPanel();
             });
         }
       }
 
-      // Top Navigation Switching
-      document.querySelectorAll(".tab-btn[data-tab]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".tab-btn[data-tab]")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          gameState.activeTab = btn.dataset.tab;
-          penaltyFlag.visible = false;
+      // Top Navigation Tab Switcher
+      function switchToTab(tabId) {
+        document
+          .querySelectorAll(".tab-btn[data-tab]")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.tab === tabId),
+          );
+        gameState.activeTab = tabId;
+        penaltyFlag.visible = false;
+        setZoneHighlight(false);
 
-          if (gameState.activeTab === "field") {
-            flyCameraTo([0, 62, 68], [0, 0, 0]);
-          } else if (gameState.activeTab === "players") {
-            selectPositionGroup(gameState.selectedPosGroup);
-          } else if (gameState.activeTab === "downs") {
-            applyCameraPreset("broadcast");
-          } else if (gameState.activeTab === "rules") {
-            flyCameraTo(
-              [gameState.losX - 10, 16, 24],
-              [gameState.losX + 2, 0, 0],
-            );
-          }
-          renderPanel();
-        });
+        if (tabId === "step1") {
+          gameState.losX = -25;
+          resetFormationToLOS();
+          applyCameraPreset("overview");
+        } else if (tabId === "step2") {
+          gameState.losX = -15;
+          resetFormationToLOS();
+          flyCameraTo([-26, 17, 25], [-19, 1, 0], 750);
+        } else if (tabId === "step3") {
+          startFreshDrive(-25);
+          applyCameraPreset("broadcast");
+        } else if (tabId === "step4") {
+          gameState.losX = 40;
+          resetFormationToLOS();
+          flyCameraTo([24, 18, 28], [52, 2, 0], 750);
+        } else if (tabId === "step5") {
+          gameState.losX = -15;
+          resetFormationToLOS();
+          selectPositionGroup(gameState.selectedPosGroup);
+        } else if (tabId === "step6") {
+          startFreshDrive(-25);
+          applyCameraPreset("broadcast");
+        }
+        renderPanel();
+      }
+
+      document.querySelectorAll(".tab-btn[data-tab]").forEach((btn) => {
+        btn.addEventListener("click", () => switchToTab(btn.dataset.tab));
       });
 
-      // Raycasting: Click 3D Player to Inspect Role!
+      // Click 3D Player to Inspect Role
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
       let pointerDownPos = { x: 0, y: 0 };
@@ -2118,11 +3137,14 @@
         pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
         pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
-        const hits = raycaster.intersectObjects(playerMeshes);
+        const visibleMeshes = playerMeshes.filter(
+          (m) => m.userData.player && m.userData.player.group.visible,
+        );
+        const hits = raycaster.intersectObjects(visibleMeshes);
         if (hits.length > 0 && hits[0].object.userData.player) {
           const roleKey = hits[0].object.userData.player.roleKey;
-          if (gameState.activeTab !== "players") {
-            document.querySelector('.tab-btn[data-tab="players"]').click();
+          if (gameState.activeTab !== "step5") {
+            switchToTab("step5");
           }
           selectPositionGroup(roleKey);
         }
@@ -2147,6 +3169,9 @@
       function animate(now) {
         requestAnimationFrame(animate);
 
+        // Pulse the ball beacon so beginners never lose track of the football
+        ballBeacon.scale.setScalar(1 + Math.sin(now * 0.006) * 0.15);
+
         // Smooth Camera Flight
         if (camTween) {
           const t = Math.min(1, (now - camTween.startTime) / camTween.duration);
@@ -2160,7 +3185,7 @@
           if (t >= 1) camTween = null;
         }
 
-        // Live Play Animation Interpolation
+        // Play / Demo Animation Interpolation
         if (activePlayAnim) {
           const p = Math.min(
             1,
@@ -2168,88 +3193,96 @@
           );
           const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
 
-          players.forEach((pl) => {
-            pl.group.position.lerpVectors(pl.startPos, pl.targetPos, ease);
-            // Subtle running bob
-            pl.group.position.y =
-              Math.abs(Math.sin(now * 0.022 + pl.relZ)) *
-              0.25 *
-              (1 - Math.abs(2 * p - 1));
-          });
+          if (activePlayAnim.mode === "step1_march") {
+            const bx = THREE.MathUtils.lerp(-40, 54, ease);
+            const by = 0.8 + Math.abs(Math.sin(p * Math.PI * 5)) * 2.4;
+            ballGroup.position.set(bx, by, 0);
+            ballBeacon.position.set(bx, 0.04, 0);
+          } else {
+            players.forEach((pl) => {
+              if (!pl.group.visible) return;
+              pl.group.position.lerpVectors(pl.startPos, pl.targetPos, ease);
+              pl.group.position.y =
+                Math.abs(Math.sin(now * 0.022 + pl.relZ)) *
+                0.24 *
+                (1 - Math.abs(2 * p - 1));
+            });
 
-          // Football Physics Trajectory
-          const {
-            type,
-            startX,
-            rawDestX,
-            carrierEndZ,
-            ballArcPeak,
-            passTargetPlayer,
-          } = activePlayAnim;
+            const {
+              type,
+              startX,
+              rawDestX,
+              carrierEndZ,
+              ballArcPeak,
+            } = activePlayAnim;
 
-          if (type === "run") {
-            if (p < 0.22) {
-              // Snap to QB & handoff to RB
-              ballGroup.position.lerpVectors(
-                new THREE.Vector3(startX - 0.5, 0.4, 0),
-                rbPlayer.group.position
-                  .clone()
-                  .add(new THREE.Vector3(0, 1.1, 0)),
-                p / 0.22,
-              );
-            } else {
-              ballGroup.position
-                .copy(rbPlayer.group.position)
-                .add(new THREE.Vector3(0.3, 1.1, 0));
-            }
-          } else if (
-            type === "short_pass" ||
-            type === "deep_pass" ||
-            type === "two_pt"
-          ) {
-            if (p < 0.28) {
-              // Snap & QB dropback
-              ballGroup.position
-                .copy(qbPlayer.group.position)
-                .add(new THREE.Vector3(0.3, 1.45, 0));
-            } else {
-              // Parabolic pass flight in the air!
-              const airT = (p - 0.28) / 0.72;
-              const qbPos = qbPlayer.group.position;
-              const endX =
-                activePlayAnim.outcomeType === "incomplete"
-                  ? rawDestX + 9
-                  : rawDestX;
-              const bx = THREE.MathUtils.lerp(qbPos.x, endX, airT);
-              const bz = THREE.MathUtils.lerp(0, carrierEndZ, airT);
-              const endY =
-                activePlayAnim.outcomeType === "incomplete" ? 0.35 : 1.5;
+            if (type === "run") {
+              if (p < 0.24) {
+                ballGroup.position.lerpVectors(
+                  new THREE.Vector3(startX - 0.5, 0.4, 0),
+                  rbPlayer.group.position
+                    .clone()
+                    .add(new THREE.Vector3(0, 1.1, 0)),
+                  p / 0.24,
+                );
+              } else {
+                ballGroup.position
+                  .copy(rbPlayer.group.position)
+                  .add(new THREE.Vector3(0.3, 1.1, 0));
+              }
+            } else if (
+              type === "short_pass" ||
+              type === "deep_pass" ||
+              type === "two_pt"
+            ) {
+              if (p < 0.28) {
+                ballGroup.position
+                  .copy(qbPlayer.group.position)
+                  .add(new THREE.Vector3(0.3, 1.45, 0));
+              } else {
+                const airT = (p - 0.28) / 0.72;
+                const qbPos = qbPlayer.group.position;
+                const endX =
+                  activePlayAnim.outcomeType === "incomplete"
+                    ? rawDestX + 9
+                    : rawDestX;
+                const bx = THREE.MathUtils.lerp(qbPos.x, endX, airT);
+                const bz = THREE.MathUtils.lerp(0, carrierEndZ, airT);
+                const endY =
+                  activePlayAnim.outcomeType === "incomplete" ? 0.35 : 1.5;
+                const by =
+                  THREE.MathUtils.lerp(1.6, endY, airT) +
+                  Math.sin(airT * Math.PI) * ballArcPeak;
+                ballGroup.position.set(bx, by, bz);
+                ballGroup.rotation.x += 0.35;
+              }
+            } else if (type === "fg" || type === "xp") {
+              const kickStart = new THREE.Vector3(startX - 7, 0.4, 0);
+              const kickEnd = new THREE.Vector3(63, 6.5, carrierEndZ);
+              const bx = THREE.MathUtils.lerp(kickStart.x, kickEnd.x, p);
+              const bz = THREE.MathUtils.lerp(0, kickEnd.z, p);
               const by =
-                THREE.MathUtils.lerp(1.6, endY, airT) +
-                Math.sin(airT * Math.PI) * ballArcPeak;
+                THREE.MathUtils.lerp(0.4, kickEnd.y, p) +
+                Math.sin(p * Math.PI) * ballArcPeak;
               ballGroup.position.set(bx, by, bz);
-              ballGroup.rotation.x += 0.35; // Tight spiral!
+              ballGroup.rotation.z += 0.28;
+            } else if (type === "punt") {
+              const puntStart = new THREE.Vector3(startX - 10, 1.0, 0);
+              const puntEnd = new THREE.Vector3(rawDestX, 0.4, 2);
+              const bx = THREE.MathUtils.lerp(puntStart.x, puntEnd.x, p);
+              const bz = THREE.MathUtils.lerp(0, puntEnd.z, p);
+              const by =
+                THREE.MathUtils.lerp(1.0, 0.4, p) +
+                Math.sin(p * Math.PI) * ballArcPeak;
+              ballGroup.position.set(bx, by, bz);
+              ballGroup.rotation.x += 0.25;
             }
-          } else if (type === "fg" || type === "xp") {
-            const kickStart = new THREE.Vector3(startX - 7, 0.4, 0);
-            const kickEnd = new THREE.Vector3(63, 6.5, carrierEndZ);
-            const bx = THREE.MathUtils.lerp(kickStart.x, kickEnd.x, p);
-            const bz = THREE.MathUtils.lerp(0, kickEnd.z, p);
-            const by =
-              THREE.MathUtils.lerp(0.4, kickEnd.y, p) +
-              Math.sin(p * Math.PI) * ballArcPeak;
-            ballGroup.position.set(bx, by, bz);
-            ballGroup.rotation.z += 0.28; // End-over-end kick spin
-          } else if (type === "punt") {
-            const puntStart = new THREE.Vector3(startX - 10, 1.0, 0);
-            const puntEnd = new THREE.Vector3(rawDestX, 0.4, 2);
-            const bx = THREE.MathUtils.lerp(puntStart.x, puntEnd.x, p);
-            const bz = THREE.MathUtils.lerp(0, puntEnd.z, p);
-            const by =
-              THREE.MathUtils.lerp(1.0, 0.4, p) +
-              Math.sin(p * Math.PI) * ballArcPeak;
-            ballGroup.position.set(bx, by, bz);
-            ballGroup.rotation.x += 0.25;
+
+            ballBeacon.position.set(
+              ballGroup.position.x,
+              0.04,
+              ballGroup.position.z,
+            );
           }
 
           if (p >= 1) {
@@ -2260,7 +3293,7 @@
           }
         }
 
-        // Drop penalty flag gravity
+        // Penalty flag drop
         if (penaltyFlag.visible && penaltyFlag.position.y > 0.48) {
           penaltyFlag.position.y = Math.max(
             0.48,
@@ -2272,26 +3305,44 @@
         controls.update();
 
         // Update Floating 3D Labels
-        projectToScreen(
-          new THREE.Vector3(losLine.position.x, 0.6, -24),
-          losLabelEl,
-        );
+        if (losLine.visible) {
+          losLabelEl.style.display = "block";
+          projectToScreen(
+            new THREE.Vector3(losLine.position.x, 0.6, -24),
+            losLabelEl,
+          );
+        } else {
+          losLabelEl.style.display = "none";
+        }
+
         if (firstDownLine.visible) {
           fdLabelEl.style.display = "block";
           projectToScreen(
-            new THREE.Vector3(firstDownLine.position.x, 0.6, 24),
+            new THREE.Vector3(firstDownLine.position.x, 0.6, 17),
             fdLabelEl,
           );
         } else {
           fdLabelEl.style.display = "none";
         }
 
-        if (gameState.activeTab === "players") {
+        if (zoneLabelEl.style.display === "block") {
+          projectToScreen(
+            new THREE.Vector3(zoneHighlight.position.x, 2.2, 0),
+            zoneLabelEl,
+          );
+        }
+
+        if (
+          gameState.activeTab === "step2" ||
+          gameState.activeTab === "step5"
+        ) {
           players.forEach((p) => {
-            projectToScreen(
-              p.group.position.clone().add(new THREE.Vector3(0, 2.7, 0)),
-              p.tag,
-            );
+            if (p.group.visible && p.tag.style.display !== "none") {
+              projectToScreen(
+                p.group.position.clone().add(new THREE.Vector3(0, 2.7, 0)),
+                p.tag,
+              );
+            }
           });
         }
 
@@ -2304,9 +3355,21 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      // Initialize UI & Launch Loop
-      renderPanel();
-      flyCameraTo([0, 62, 68], [0, 0, 0], 1100);
+      // Initialize on Step 1 (or URL ?tab=stepX parameter)
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialTabParam = urlParams.get("tab");
+      if (initialTabParam && STEP_ORDER.includes(initialTabParam)) {
+        switchToTab(initialTabParam);
+      } else {
+        resetFormationToLOS();
+        renderPanel();
+        applyCameraPreset("overview");
+      }
+      if (camTween && urlParams.has("tab")) {
+        camera.position.copy(camTween.endPos);
+        controls.target.copy(camTween.endTarget);
+        camTween = null;
+      }
       requestAnimationFrame(animate);
     </script>
   </body>
