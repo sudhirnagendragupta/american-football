@@ -2,13 +2,17 @@
 
 An interactive, single-file 3D web application built with **Three.js** designed to teach someone with zero background in American Football everything they need to know to understand and appreciate the game.
 
-![Football 101 Animated Walkthrough](screenshots/football-101-demo.gif)
-
 ## Prompt & Generation
 
 Created using **Gemini 4 Carbon** in **less than 2 minutes** with a single prompt:
 
 > *"Build a 3D interactive model to teach someone who does not know American Football everything they need to know to appreciate the game."*
+
+---
+
+## Animated Demo (GIF)
+
+![Football 101 Animated Walkthrough](screenshots/football-101-demo.gif)
 
 ---
 
