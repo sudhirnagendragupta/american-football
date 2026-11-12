@@ -1,0 +1,2313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Football 101 — Interactive 3D Guide to American Football</title>
+    <style>
+      :root {
+        --bg-dark: rgba(10, 15, 28, 0.86);
+        --bg-card: rgba(20, 29, 49, 0.9);
+        --border: rgba(255, 255, 255, 0.14);
+        --accent-blue: #3b82f6;
+        --accent-red: #ef4444;
+        --accent-gold: #facc15;
+        --accent-green: #22c55e;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter,
+          sans-serif;
+        background: #060913;
+        color: var(--text-main);
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #canvas-container {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+      }
+
+      /* Top Navigation Bar */
+      header {
+        position: fixed;
+        top: 14px;
+        left: 16px;
+        right: 16px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: var(--bg-dark);
+        backdrop-filter: blur(14px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 18px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-icon {
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, #b45309, #78350f);
+        border: 2px solid #fde68a;
+        border-radius: 50% 15% 50% 15%;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: #fff;
+        transform: rotate(-15deg);
+      }
+
+      .brand h1 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+
+      .brand span {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        text-transform: none;
+      }
+
+      .nav-tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .tab-btn {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+        border: 1px solid transparent;
+        padding: 8px 14px;
+        border-radius: 9px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tab-btn:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .tab-btn.active {
+        background: var(--accent-blue);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+      }
+
+      /* Camera Bar */
+      .camera-bar {
+        position: fixed;
+        top: 82px;
+        right: 16px;
+        z-index: 20;
+        display: flex;
+        gap: 6px;
+        background: var(--bg-dark);
+        backdrop-filter: blur(12px);
+        padding: 6px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+      }
+
+      .cam-btn {
+        background: transparent;
+        color: var(--text-muted);
+        border: none;
+        padding: 6px 10px;
+        border-radius: 7px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.18s;
+      }
+
+      .cam-btn:hover,
+      .cam-btn.active {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+      }
+
+      /* Left Side Lesson Panel */
+      .side-panel {
+        position: fixed;
+        top: 82px;
+        left: 16px;
+        width: 360px;
+        max-height: calc(100vh - 190px);
+        overflow-y: auto;
+        z-index: 20;
+        background: var(--bg-dark);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .side-panel::-webkit-scrollbar {
+        width: 6px;
+      }
+      .side-panel::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      .module-tag {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 3px 8px;
+        border-radius: 5px;
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+        margin-bottom: 8px;
+      }
+
+      .panel-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        line-height: 1.25;
+      }
+
+      .panel-desc {
+        font-size: 0.86rem;
+        line-height: 1.55;
+        color: #cbd5e1;
+        margin-bottom: 14px;
+      }
+
+      .info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .info-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 13px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .info-card:hover {
+        border-color: rgba(96, 165, 250, 0.6);
+        transform: translateX(3px);
+      }
+
+      .info-card.selected {
+        border-color: var(--accent-gold);
+        background: rgba(250, 204, 21, 0.1);
+      }
+
+      .info-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      .info-card-title {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: #fff;
+      }
+
+      .badge {
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 6px;
+      }
+
+      .badge-gold {
+        background: rgba(250, 204, 21, 0.2);
+        color: var(--accent-gold);
+      }
+      .badge-blue {
+        background: rgba(59, 130, 246, 0.25);
+        color: #93c5fd;
+      }
+      .badge-red {
+        background: rgba(239, 68, 68, 0.25);
+        color: #fca5a5;
+      }
+      .badge-green {
+        background: rgba(34, 197, 94, 0.25);
+        color: #86efac;
+      }
+
+      .info-card p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.45;
+      }
+
+      .position-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .pos-pill {
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.06);
+        color: #e2e8f0;
+        transition: 0.15s;
+      }
+
+      .pos-pill.offense {
+        border-left: 3px solid var(--accent-blue);
+      }
+      .pos-pill.defense {
+        border-left: 3px solid var(--accent-red);
+      }
+      .pos-pill.active {
+        background: var(--accent-gold);
+        color: #0f172a;
+        border-color: var(--accent-gold);
+      }
+
+      /* TV Broadcast Scorebug & Play Bar (Bottom) */
+      .broadcast-bar {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: min(820px, calc(100vw - 32px));
+      }
+
+      .play-controls {
+        display: none;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        background: var(--bg-dark);
+        backdrop-filter: blur(14px);
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      }
+
+      .play-controls.visible {
+        display: flex;
+      }
+
+      .play-btn {
+        background: linear-gradient(180deg, #1e293b, #0f172a);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 8px 14px;
+        border-radius: 9px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 112px;
+      }
+
+      .play-btn span {
+        font-size: 0.67rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-top: 2px;
+      }
+
+      .play-btn:hover:not(:disabled) {
+        border-color: var(--accent-gold);
+        transform: translateY(-2px);
+        background: #1e3a8a;
+      }
+
+      .play-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .play-btn.special {
+        border-color: rgba(250, 204, 21, 0.4);
+      }
+
+      .scorebug {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(
+          90deg,
+          #0f172a 0%,
+          #1e293b 50%,
+          #0f172a 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+        width: 100%;
+        max-width: 680px;
+        height: 52px;
+      }
+
+      .sb-team {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        height: 100%;
+        font-weight: 800;
+        font-size: 0.95rem;
+        min-width: 135px;
+      }
+
+      .sb-you {
+        background: linear-gradient(90deg, #1d4ed8, #1e40af);
+      }
+
+      .sb-opp {
+        background: linear-gradient(90deg, #991b1b, #b91c1c);
+      }
+
+      .sb-score {
+        font-size: 1.35rem;
+        font-weight: 900;
+        margin-left: 12px;
+      }
+
+      .sb-situation {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 14px;
+        font-weight: 800;
+      }
+
+      .sb-down {
+        color: var(--accent-gold);
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+      }
+
+      .sb-spot {
+        color: #cbd5e1;
+        font-size: 0.85rem;
+      }
+
+      /* 3D Floating Labels */
+      #labels-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .field-label {
+        position: absolute;
+        transform: translate(-50%, -100%);
+        padding: 4px 9px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        transition: opacity 0.2s;
+      }
+
+      .label-los {
+        background: rgba(37, 99, 235, 0.92);
+        color: #fff;
+        border: 1px solid #93c5fd;
+      }
+
+      .label-fd {
+        background: rgba(234, 179, 8, 0.95);
+        color: #0f172a;
+        border: 1px solid #fef08a;
+      }
+
+      .label-player {
+        background: rgba(15, 23, 42, 0.88);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        padding: 2px 6px;
+        font-size: 0.66rem;
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      .label-player.highlighted {
+        background: var(--accent-gold);
+        color: #0f172a;
+        border-color: #fff;
+        transform: translate(-50%, -115%) scale(1.15);
+        z-index: 15;
+      }
+
+      /* Announcement Banner */
+      #banner {
+        position: fixed;
+        top: 44%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.85);
+        z-index: 30;
+        background: rgba(15, 23, 42, 0.95);
+        border: 2px solid var(--accent-gold);
+        padding: 18px 34px;
+        border-radius: 16px;
+        text-align: center;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
+      }
+
+      #banner.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      #banner h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--accent-gold);
+        letter-spacing: 1px;
+      }
+
+      #banner p {
+        font-size: 0.95rem;
+        color: #e2e8f0;
+        margin-top: 4px;
+      }
+
+      .coach-box {
+        background: rgba(30, 58, 138, 0.35);
+        border-left: 3px solid var(--accent-gold);
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        line-height: 1.48;
+        color: #e2e8f0;
+        margin-bottom: 12px;
+      }
+
+      .coach-box strong {
+        color: var(--accent-gold);
+        display: block;
+        margin-bottom: 3px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .hint-footer {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+        margin-top: 12px;
+        text-align: center;
+      }
+
+      @media (max-width: 820px) {
+        .side-panel {
+          width: calc(100vw - 32px);
+          max-height: 36vh;
+          top: auto;
+          bottom: 145px;
+        }
+        .camera-bar {
+          display: none;
+        }
+      }
+    </style>
+
+    <!-- Import Three.js via CDN -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+    <div id="labels-container"></div>
+
+    <div id="banner">
+      <h2 id="banner-title">TOUCHDOWN!</h2>
+      <p id="banner-sub">+6 Points! Choose your conversion play below.</p>
+    </div>
+
+    <!-- Top Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">++++</div>
+        <div>
+          <h1>Football 101</h1>
+          <span>Interactive 3D Guide to American Football</span>
+        </div>
+      </div>
+      <div class="nav-tabs">
+        <button class="tab-btn active" data-tab="field">
+          1. The Field & Scoring
+        </button>
+        <button class="tab-btn" data-tab="players">2. The 22 Players</button>
+        <button class="tab-btn" data-tab="downs">
+          3. Downs & Play Simulator
+        </button>
+        <button class="tab-btn" data-tab="rules">
+          4. Strategy & Penalties
+        </button>
+      </div>
+    </header>
+
+    <!-- Camera Angle Switcher -->
+    <div class="camera-bar">
+      <button class="cam-btn" data-cam="broadcast">TV Broadcast</button>
+      <button class="cam-btn" data-cam="skycam">QB SkyCam</button>
+      <button class="cam-btn" data-cam="aerial">Bird's-Eye</button>
+      <button class="cam-btn" data-cam="endzone">Goalpost View</button>
+    </div>
+
+    <!-- Left Educational Panel -->
+    <aside class="side-panel" id="side-panel"></aside>
+
+    <!-- Bottom Broadcast Scorebug & Play Calling Controls -->
+    <div class="broadcast-bar">
+      <div class="play-controls" id="play-controls"></div>
+
+      <div class="scorebug">
+        <div class="sb-team sb-you">
+          <span>OFFENSE</span>
+          <span class="sb-score" id="score-you">0</span>
+        </div>
+        <div class="sb-situation">
+          <span class="sb-down" id="sb-down-text">1ST & 10</span>
+          <span class="sb-spot" id="sb-spot-text">BALL ON OWN 25</span>
+        </div>
+        <div class="sb-team sb-opp">
+          <span>DEFENSE</span>
+          <span class="sb-score" id="score-opp">0</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+      // =========================================================================
+      // 1. EDUCATIONAL CONTENT DATA
+      // =========================================================================
+      const POSITIONS_DATA = {
+        QB: {
+          name: "Quarterback (QB)",
+          side: "Offense",
+          group: "QB",
+          summary: "The Commander & Field General.",
+          details:
+            "Receives the ball on almost every play. In under 3 seconds, the QB reads the defense and either hands the ball off for a run, throws a pass downfield, or scrambles with it himself.",
+        },
+        RB: {
+          name: "Running Back (RB)",
+          side: "Offense",
+          group: "RB",
+          summary: "Agile Power Runner & Blocker.",
+          details:
+            "Lines up next to or behind the QB. Takes handoffs to sprint through gaps created by the Offensive Line, catches short passes, or stays back to block charging defenders.",
+        },
+        WR: {
+          name: "Wide Receiver (WR)",
+          side: "Offense",
+          group: "WR",
+          summary: "High-Speed Pass Catchers.",
+          details:
+            'Lines up wide near the sidelines. Uses speed and sharp footwork ("routes") to get open and make acrobatic catches downfield.',
+        },
+        TE: {
+          name: "Tight End (TE)",
+          side: "Offense",
+          group: "TE",
+          summary: "The Hybrid Giant (Blocker + Receiver).",
+          details:
+            "Lines up right next to the heavy Offensive Line. Big enough to block like a lineman on run plays, yet athletic enough to run out and catch passes!",
+        },
+        OL: {
+          name: "Offensive Line (5 Players: C, G, T)",
+          side: "Offense",
+          group: "OL",
+          summary: "The Bodyguards (Never Touch the Ball!).",
+          details:
+            'Five massive 310+ lb athletes (Center, 2 Guards, 2 Tackles). The Center snaps the ball between his legs to start the play. Their job: form a protective "pocket" around the QB or push defenders backward on runs.',
+        },
+        DL: {
+          name: "Defensive Line (4 Players: DE, DT)",
+          side: "Defense",
+          group: "DL",
+          summary: "Trench Wreckers & Pass Rushers.",
+          details:
+            'Battle the Offensive Line on every snap. They try to tackle the Running Back behind the line or "sack" the Quarterback before he can throw.',
+        },
+        LB: {
+          name: "Linebackers (3 Players: LB)",
+          side: "Defense",
+          group: "LB",
+          summary: "The Quarterbacks of the Defense.",
+          details:
+            "Stand 4–5 yards behind the line. They must diagnose in a split second whether it is a run (charge forward to tackle) or pass (drop back to cover Tight Ends/RBs).",
+        },
+        CB: {
+          name: "Cornerbacks (CB)",
+          side: "Defense",
+          group: "CB",
+          summary: "Shadow Lockdown Defenders.",
+          details:
+            "The fastest athletes on defense. They mirror Wide Receivers step-for-step downfield trying to swat passes away or catch an Interception.",
+        },
+        S: {
+          name: "Safeties (Free & Strong Safety)",
+          side: "Defense",
+          group: "S",
+          summary: "The Last Line of Defense.",
+          details:
+            "Positioned 10–15 yards deep. If a runner breaks loose or a QB throws a deep 50-yard bomb, Safeties prevent a Touchdown.",
+        },
+      };
+
+      // =========================================================================
+      // 2. THREE.JS SCENE, STADIUM & PROCEDURAL FIELD TEXTURE
+      // =========================================================================
+      const container = document.getElementById("canvas-container");
+      const labelsContainer = document.getElementById("labels-container");
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x070b16);
+      scene.fog = new THREE.FogExp2(0x070b16, 0.0042);
+
+      const camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.5,
+        400,
+      );
+      camera.position.set(-20, 42, 58);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.07;
+      controls.maxPolarAngle = Math.PI / 2 - 0.04;
+      controls.minDistance = 12;
+      controls.maxDistance = 155;
+      controls.target.set(-20, 0, 0);
+
+      // Stadium Lighting
+      const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.75);
+      scene.add(ambientLight);
+
+      const sunLight = new THREE.DirectionalLight(0xffffff, 1.35);
+      sunLight.position.set(25, 75, 45);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 2048;
+      sunLight.shadow.mapSize.height = 2048;
+      sunLight.shadow.camera.left = -70;
+      sunLight.shadow.camera.right = 70;
+      sunLight.shadow.camera.top = 45;
+      sunLight.shadow.camera.bottom = -45;
+      scene.add(sunLight);
+
+      // Rim stadium floodlight
+      const rimLight = new THREE.DirectionalLight(0x60a5fa, 0.45);
+      rimLight.position.set(-50, 50, -50);
+      scene.add(rimLight);
+
+      // Create crisp procedural 120x53.3 yard field texture
+      function createFieldTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 2400;
+        canvas.height = 1066;
+        const ctx = canvas.getContext("2d");
+
+        const pxPerYardX = canvas.width / 120; // 20px per yard
+        const pxPerYardZ = canvas.height / 53.3; // ~20px per yard
+
+        // Alternating 5-yard turf mowing stripes
+        for (let yd = 0; yd < 120; yd += 5) {
+          ctx.fillStyle = (yd / 5) % 2 === 0 ? "#15803d" : "#166534";
+          ctx.fillRect(yd * pxPerYardX, 0, 5 * pxPerYardX, canvas.height);
+        }
+
+        // Left End Zone (0 to 10 yds -> Offense Own Endzone: Blue)
+        ctx.fillStyle = "#1e3a8a";
+        ctx.fillRect(0, 0, 10 * pxPerYardX, canvas.height);
+
+        // Right End Zone (110 to 120 yds -> Opponent Endzone: Red)
+        ctx.fillStyle = "#991b1b";
+        ctx.fillRect(110 * pxPerYardX, 0, 10 * pxPerYardX, canvas.height);
+
+        // End Zone Text
+        ctx.save();
+        ctx.font = "900 110px Impact, Arial Black, sans-serif";
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.save();
+        ctx.translate(5 * pxPerYardX, canvas.height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText("OFFENSE", 0, 0);
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(115 * pxPerYardX, canvas.height / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.fillText("TOUCHDOWN", 0, 0);
+        ctx.restore();
+        ctx.restore();
+
+        // White Sidelines & Endlines Border
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 14;
+        ctx.strokeRect(7, 7, canvas.width - 14, canvas.height - 14);
+
+        // Yard Lines (every 5 yards from 10 to 110)
+        for (let yd = 10; yd <= 110; yd += 5) {
+          const x = yd * pxPerYardX;
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = yd === 10 || yd === 110 || yd === 60 ? 8 : 4;
+          ctx.beginPath();
+          ctx.moveTo(x, 10);
+          ctx.lineTo(x, canvas.height - 10);
+          ctx.stroke();
+        }
+
+        // Hash marks every 1 yard
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.lineWidth = 3;
+        const topHashZ = 20 * pxPerYardZ;
+        const botHashZ = (53.3 - 20) * pxPerYardZ;
+        for (let yd = 11; yd < 110; yd++) {
+          if (yd % 5 === 0) continue;
+          const x = yd * pxPerYardX;
+          // Sideline hashes & middle hashes
+          [
+            [18, 32],
+            [canvas.height - 32, canvas.height - 18],
+            [topHashZ - 7, topHashZ + 7],
+            [botHashZ - 7, botHashZ + 7],
+          ].forEach(([y1, y2]) => {
+            ctx.beginPath();
+            ctx.moveTo(x, y1);
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+          });
+        }
+
+        // Yard Line Numbers (10, 20, 30, 40, 50, 40, 30, 20, 10)
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.font = "800 62px Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        for (let fieldYd = 10; fieldYd <= 90; fieldYd += 10) {
+          const displayNum = fieldYd <= 50 ? fieldYd : 100 - fieldYd;
+          const x = (10 + fieldYd) * pxPerYardX;
+
+          // Bottom numbers
+          ctx.fillText(displayNum.toString(), x, canvas.height - 145);
+
+          // Top numbers (upside down like real TV broadcasts)
+          ctx.save();
+          ctx.translate(x, 145);
+          ctx.rotate(Math.PI);
+          ctx.fillText(displayNum.toString(), 0, 0);
+          ctx.restore();
+        }
+
+        // 50 Yard Center Emblem
+        ctx.beginPath();
+        ctx.arc(60 * pxPerYardX, canvas.height / 2, 72, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.fill();
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = "#facc15";
+        ctx.stroke();
+        ctx.fillStyle = "#facc15";
+        ctx.font = "900 44px Arial";
+        ctx.fillText("50", 60 * pxPerYardX, canvas.height / 2 + 2);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        return tex;
+      }
+
+      // Stadium Ground Surrounding Apron
+      const apronGeo = new THREE.PlaneGeometry(156, 86);
+      const apronMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        roughness: 0.9,
+      });
+      const apron = new THREE.Mesh(apronGeo, apronMat);
+      apron.rotation.x = -Math.PI / 2;
+      apron.position.y = -0.06;
+      apron.receiveShadow = true;
+      scene.add(apron);
+
+      // Main 120 x 53.3 Yard Field (1 unit = 1 yard! X: -60 to +60, Z: -26.65 to +26.65)
+      const fieldGeo = new THREE.PlaneGeometry(120, 53.3);
+      const fieldMat = new THREE.MeshStandardMaterial({
+        map: createFieldTexture(),
+        roughness: 0.78,
+      });
+      const fieldMesh = new THREE.Mesh(fieldGeo, fieldMat);
+      fieldMesh.rotation.x = -Math.PI / 2;
+      fieldMesh.receiveShadow = true;
+      scene.add(fieldMesh);
+
+      // Subtle Stadium Low Wall
+      const wallMat = new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        roughness: 0.6,
+      });
+      const createWall = (w, h, d, x, z) => {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+        m.position.set(x, h / 2, z);
+        scene.add(m);
+      };
+      createWall(140, 2.2, 1.2, 0, -35);
+      createWall(140, 2.2, 1.2, 0, 35);
+      createWall(1.2, 2.2, 71, -70, 0);
+      createWall(1.2, 2.2, 71, 70, 0);
+
+      // Goalposts Builder (at X = -60 and X = +60)
+      const goalposts = [];
+      function buildGoalpost(xPos, dirSign) {
+        const group = new THREE.Group();
+        const postMat = new THREE.MeshStandardMaterial({
+          color: 0xfacc15,
+          roughness: 0.3,
+          metalness: 0.4,
+        });
+
+        // Base gooseneck support
+        const base = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.22, 0.28, 3.33, 16),
+          postMat,
+        );
+        base.position.set(xPos + dirSign * 1.6, 1.66, 0);
+        group.add(base);
+
+        const neck = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.18, 0.18, 1.7, 16),
+          postMat,
+        );
+        neck.rotation.z = Math.PI / 2;
+        neck.position.set(xPos + dirSign * 0.8, 3.33, 0);
+        group.add(neck);
+
+        // 18.5 ft (6.16 yds) Crossbar at 10 ft (3.33 yds) high
+        const crossbar = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.16, 0.16, 6.16, 16),
+          postMat,
+        );
+        crossbar.rotation.x = Math.PI / 2;
+        crossbar.position.set(xPos, 3.33, 0);
+        group.add(crossbar);
+
+        // Two 35-ft (11.6 yds) Uprights
+        [-3.08, 3.08].forEach((z) => {
+          const upright = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.12, 0.12, 11.5, 16),
+            postMat,
+          );
+          upright.position.set(xPos, 3.33 + 5.75, z);
+          upright.castShadow = true;
+          group.add(upright);
+        });
+
+        scene.add(group);
+        goalposts.push(group);
+      }
+      buildGoalpost(-60, -1);
+      buildGoalpost(60, 1);
+
+      // Orange Endzone Pylons
+      const pylonGeo = new THREE.BoxGeometry(0.35, 1.1, 0.35);
+      const pylonMat = new THREE.MeshStandardMaterial({
+        color: 0xf97316,
+        emissive: 0x9a3412,
+        emissiveIntensity: 0.3,
+      });
+      [-60, -50, 50, 60].forEach((x) => {
+        [-26.65, 26.65].forEach((z) => {
+          const p = new THREE.Mesh(pylonGeo, pylonMat);
+          p.position.set(x, 0.55, z);
+          scene.add(p);
+        });
+      });
+
+      // =========================================================================
+      // 3. TV BROADCAST LINES (BLUE SCRIMMAGE & YELLOW 1ST DOWN) + HIGHLIGHT ZONES
+      // =========================================================================
+      const losLine = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.45, 53.3),
+        new THREE.MeshBasicMaterial({
+          color: 0x3b82f6,
+          transparent: true,
+          opacity: 0.92,
+        }),
+      );
+      losLine.rotation.x = -Math.PI / 2;
+      losLine.position.y = 0.03;
+      scene.add(losLine);
+
+      const firstDownLine = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.55, 53.3),
+        new THREE.MeshBasicMaterial({
+          color: 0xfacc15,
+          transparent: true,
+          opacity: 0.95,
+        }),
+      );
+      firstDownLine.rotation.x = -Math.PI / 2;
+      firstDownLine.position.y = 0.035;
+      scene.add(firstDownLine);
+
+      // Highlight overlay box for Module 1 (Endzone / Red Zone / Field)
+      const zoneHighlight = new THREE.Mesh(
+        new THREE.PlaneGeometry(10, 53.3),
+        new THREE.MeshBasicMaterial({
+          color: 0xfacc15,
+          transparent: true,
+          opacity: 0.0,
+          side: THREE.DoubleSide,
+        }),
+      );
+      zoneHighlight.rotation.x = -Math.PI / 2;
+      zoneHighlight.position.y = 0.05;
+      scene.add(zoneHighlight);
+
+      // HTML Labels for Blue & Yellow Lines
+      const losLabelEl = document.createElement("div");
+      losLabelEl.className = "field-label label-los";
+      losLabelEl.textContent = "LINE OF SCRIMMAGE";
+      labelsContainer.appendChild(losLabelEl);
+
+      const fdLabelEl = document.createElement("div");
+      fdLabelEl.className = "field-label label-fd";
+      fdLabelEl.textContent = "1ST DOWN LINE";
+      labelsContainer.appendChild(fdLabelEl);
+
+      // =========================================================================
+      // 4. THE 22 PLAYERS & 3D FOOTBALL + PENALTY FLAG
+      // =========================================================================
+      const players = [];
+      const playerMeshes = [];
+
+      const offenseBodyMat = new THREE.MeshStandardMaterial({
+        color: 0x2563eb,
+        roughness: 0.35,
+      });
+      const defenseBodyMat = new THREE.MeshStandardMaterial({
+        color: 0xdc2626,
+        roughness: 0.35,
+      });
+      const highlightBodyMat = new THREE.MeshStandardMaterial({
+        color: 0xfacc15,
+        emissive: 0xca8a04,
+        emissiveIntensity: 0.4,
+        roughness: 0.25,
+      });
+      const helmetWhiteMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc,
+        roughness: 0.2,
+        metalness: 0.2,
+      });
+
+      function createPlayer(
+        roleKey,
+        label,
+        side,
+        relX,
+        relZ,
+        scaleRadius = 0.55,
+      ) {
+        const group = new THREE.Group();
+        const baseMat = side === "Offense" ? offenseBodyMat : defenseBodyMat;
+
+        // Torso
+        const body = new THREE.Mesh(
+          new THREE.CylinderGeometry(scaleRadius, scaleRadius * 0.82, 1.55, 16),
+          baseMat,
+        );
+        body.position.y = 0.85;
+        body.castShadow = true;
+        group.add(body);
+
+        // Helmet
+        const helmet = new THREE.Mesh(
+          new THREE.SphereGeometry(0.42, 16, 16),
+          helmetWhiteMat,
+        );
+        helmet.position.y = 1.95;
+        helmet.castShadow = true;
+        group.add(helmet);
+
+        // Selection ring on turf
+        const ring = new THREE.Mesh(
+          new THREE.RingGeometry(scaleRadius + 0.2, scaleRadius + 0.42, 24),
+          new THREE.MeshBasicMaterial({
+            color: 0xfacc15,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0,
+          }),
+        );
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.y = 0.04;
+        group.add(ring);
+
+        scene.add(group);
+
+        // Floating HTML Badge for Module 2
+        const tag = document.createElement("div");
+        tag.className = "field-label label-player";
+        tag.textContent = roleKey;
+        tag.style.display = "none";
+        tag.addEventListener("click", () => selectPositionGroup(roleKey));
+        labelsContainer.appendChild(tag);
+
+        const playerObj = {
+          roleKey,
+          label,
+          side,
+          relX,
+          relZ,
+          group,
+          body,
+          ring,
+          baseMat,
+          tag,
+          startPos: new THREE.Vector3(),
+          targetPos: new THREE.Vector3(),
+        };
+
+        body.userData.player = playerObj;
+        helmet.userData.player = playerObj;
+        playerMeshes.push(body, helmet);
+        players.push(playerObj);
+        return playerObj;
+      }
+
+      // Build 11 Offense Players (moving toward +X)
+      [-3.2, -1.6, 0, 1.6, 3.2].forEach((z, idx) => {
+        createPlayer(
+          "OL",
+          idx === 2 ? "Center (C)" : "Offensive Line",
+          "Offense",
+          -0.9,
+          z,
+          0.72,
+        );
+      });
+      const qbPlayer = createPlayer(
+        "QB",
+        "Quarterback",
+        "Offense",
+        -4.8,
+        0,
+        0.56,
+      );
+      const rbPlayer = createPlayer(
+        "RB",
+        "Running Back",
+        "Offense",
+        -5.4,
+        2.2,
+        0.58,
+      );
+      const tePlayer = createPlayer(
+        "TE",
+        "Tight End",
+        "Offense",
+        -1.0,
+        5.0,
+        0.65,
+      );
+      const wr1 = createPlayer(
+        "WR",
+        "Wide Receiver (X)",
+        "Offense",
+        -0.9,
+        -15.5,
+        0.52,
+      );
+      const wr2 = createPlayer(
+        "WR",
+        "Slot Receiver",
+        "Offense",
+        -1.9,
+        -8.5,
+        0.52,
+      );
+      const wr3 = createPlayer(
+        "WR",
+        "Wide Receiver (Z)",
+        "Offense",
+        -1.4,
+        15.0,
+        0.52,
+      );
+
+      // Build 11 Defense Players (facing -X)
+      [-3.8, -1.3, 1.3, 4.2].forEach((z) => {
+        createPlayer("DL", "Defensive Line", "Defense", 0.9, z, 0.7);
+      });
+      [-4.2, 0, 4.5].forEach((z) => {
+        createPlayer("LB", "Linebacker", "Defense", 4.6, z, 0.62);
+      });
+      const cb1 = createPlayer("CB", "Cornerback", "Defense", 4.2, -15.5, 0.52);
+      const cb2 = createPlayer("CB", "Cornerback", "Defense", 4.2, 15.0, 0.52);
+      const ssPlayer = createPlayer(
+        "S",
+        "Strong Safety",
+        "Defense",
+        8.5,
+        -6.5,
+        0.55,
+      );
+      const fsPlayer = createPlayer(
+        "S",
+        "Free Safety",
+        "Defense",
+        12.5,
+        5.5,
+        0.55,
+      );
+
+      // 3D Prolate Spheroid Football
+      const ballGroup = new THREE.Group();
+      const ballGeo = new THREE.SphereGeometry(0.38, 16, 16);
+      ballGeo.scale(1.55, 0.95, 0.95);
+      const ballMesh = new THREE.Mesh(
+        ballGeo,
+        new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.45 }),
+      );
+      ballMesh.castShadow = true;
+      ballGroup.add(ballMesh);
+
+      const laces = new THREE.Mesh(
+        new THREE.BoxGeometry(0.45, 0.08, 0.14),
+        new THREE.MeshBasicMaterial({ color: 0xffffff }),
+      );
+      laces.position.y = 0.35;
+      ballGroup.add(laces);
+      scene.add(ballGroup);
+
+      // 3D Yellow Penalty Flag (for Module 4)
+      const penaltyFlag = new THREE.Mesh(
+        new THREE.ConeGeometry(0.42, 0.95, 8),
+        new THREE.MeshStandardMaterial({
+          color: 0xfacc15,
+          emissive: 0xeab308,
+          emissiveIntensity: 0.5,
+        }),
+      );
+      penaltyFlag.visible = false;
+      scene.add(penaltyFlag);
+
+      // =========================================================================
+      // 5. GAME STATE & FORMATION PLACEMENT
+      // =========================================================================
+      const gameState = {
+        activeTab: "field",
+        selectedPosGroup: "QB",
+        losX: -25, // -25 corresponds to Offense's OWN 25-yard line
+        firstDownX: -15, // -15 corresponds to OWN 35-yard line (10 yards ahead)
+        down: 1,
+        scoreYou: 0,
+        scoreOpp: 0,
+        awaitingConversion: false,
+        animating: false,
+        coachMessage:
+          'Welcome! You have the ball at your own 25-yard line. You have 4 chances ("downs") to advance 10 yards past the Yellow Line. Pick a play below!',
+      };
+
+      function formatYardLine(x) {
+        const rounded = Math.round(x);
+        if (rounded === 0) return "50 YD LINE";
+        if (rounded < 0) return `OWN ${50 + rounded}`;
+        if (rounded >= 50) return "END ZONE";
+        return `OPP ${50 - rounded}`;
+      }
+
+      function formatOrdinal(n) {
+        return ["1ST", "2ND", "3RD", "4TH"][n - 1] || "1ST";
+      }
+
+      function updateScorebugUI() {
+        document.getElementById("score-you").textContent = gameState.scoreYou;
+        document.getElementById("score-opp").textContent = gameState.scoreOpp;
+
+        const downEl = document.getElementById("sb-down-text");
+        const spotEl = document.getElementById("sb-spot-text");
+
+        if (gameState.awaitingConversion) {
+          downEl.textContent = "CONVERSION TRY";
+          spotEl.textContent = "1 PT KICK OR 2 PT PLAY";
+        } else {
+          const dist =
+            gameState.firstDownX >= 50
+              ? "GOAL"
+              : Math.max(1, Math.round(gameState.firstDownX - gameState.losX));
+          downEl.textContent = `${formatOrdinal(gameState.down)} & ${dist}`;
+          spotEl.textContent = `BALL ON ${formatYardLine(gameState.losX)}`;
+        }
+      }
+
+      function resetFormationToLOS() {
+        losLine.position.x = gameState.losX;
+        firstDownLine.position.x = Math.min(50, gameState.firstDownX);
+        firstDownLine.visible = !gameState.awaitingConversion;
+
+        players.forEach((p) => {
+          // Compress defense depth near the goal line so they don't stand behind the stadium wall
+          let rx = p.relX;
+          if (p.side === "Defense" && gameState.losX + rx > 56) {
+            rx = Math.min(rx * 0.55, 56 - gameState.losX);
+          }
+          p.group.position.set(gameState.losX + rx, 0, p.relZ);
+          p.startPos.copy(p.group.position);
+        });
+
+        // Place football at Center's feet before snap
+        ballGroup.position.set(gameState.losX - 0.5, 0.38, 0);
+        ballGroup.rotation.set(0, 0, 0);
+        updateScorebugUI();
+      }
+
+      resetFormationToLOS();
+
+      // =========================================================================
+      // 6. SMOOTH CAMERA PRESETS
+      // =========================================================================
+      let camTween = null;
+
+      function flyCameraTo(pos, target, duration = 900) {
+        camTween = {
+          startPos: camera.position.clone(),
+          endPos: new THREE.Vector3(...pos),
+          startTarget: controls.target.clone(),
+          endTarget: new THREE.Vector3(...target),
+          startTime: performance.now(),
+          duration,
+        };
+      }
+
+      function applyCameraPreset(preset) {
+        document
+          .querySelectorAll(".cam-btn")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.cam === preset),
+          );
+        const x = gameState.losX;
+        if (preset === "broadcast") {
+          flyCameraTo([x - 4, 24, 42], [x + 6, 0, 0]);
+        } else if (preset === "skycam") {
+          flyCameraTo([x - 16, 11, 0], [x + 14, 1.5, 0]);
+        } else if (preset === "aerial") {
+          flyCameraTo([0, 92, 0.1], [0, 0, 0]);
+        } else if (preset === "endzone") {
+          flyCameraTo([74, 14, 0], [35, 3, 0]);
+        }
+      }
+
+      document.querySelectorAll(".cam-btn").forEach((btn) => {
+        btn.addEventListener("click", () => applyCameraPreset(btn.dataset.cam));
+      });
+
+      // =========================================================================
+      // 7. BANNER HELPER
+      // =========================================================================
+      let bannerTimer = null;
+      function showBanner(title, subtitle, duration = 2600) {
+        const el = document.getElementById("banner");
+        document.getElementById("banner-title").textContent = title;
+        document.getElementById("banner-sub").textContent = subtitle;
+        el.classList.add("show");
+        clearTimeout(bannerTimer);
+        bannerTimer = setTimeout(() => el.classList.remove("show"), duration);
+      }
+
+      // =========================================================================
+      // 8. PLAY ANIMATION ENGINE (RUN, PASS, FIELD GOAL, PUNT, FLAG)
+      // =========================================================================
+      let activePlayAnim = null;
+
+      function setPlayButtonsDisabled(disabled) {
+        document
+          .querySelectorAll(".play-btn")
+          .forEach((b) => (b.disabled = disabled));
+      }
+
+      function runSimulatedPlay(type) {
+        if (gameState.animating) return;
+        gameState.animating = true;
+        setPlayButtonsDisabled(true);
+        penaltyFlag.visible = false;
+
+        const startX = gameState.losX;
+        let yardsGained = 0;
+        let outcomeType = "normal"; // normal | incomplete | interception | fg_good | fg_miss | punt
+        let ballArcPeak = 3.5;
+        let carrierEndZ = 0;
+        let passTargetPlayer = wr2;
+
+        // Determine realistic football outcome
+        if (type === "run") {
+          const roll = Math.random();
+          if (roll < 0.15) yardsGained = -1;
+          else if (roll < 0.78)
+            yardsGained = Math.floor(3 + Math.random() * 5); // 3 to 7 yds
+          else yardsGained = Math.floor(9 + Math.random() * 12); // Breakaway run!
+          carrierEndZ = (Math.random() - 0.3) * 6;
+        } else if (type === "short_pass") {
+          passTargetPlayer = Math.random() > 0.45 ? wr2 : tePlayer;
+          if (Math.random() < 0.68) {
+            yardsGained = Math.floor(5 + Math.random() * 8);
+            carrierEndZ = passTargetPlayer.relZ * 0.75;
+            ballArcPeak = 4.2;
+          } else {
+            outcomeType = "incomplete";
+            yardsGained = 0;
+            carrierEndZ = passTargetPlayer.relZ * 0.75;
+            ballArcPeak = 3.8;
+          }
+        } else if (type === "deep_pass") {
+          passTargetPlayer = Math.random() > 0.5 ? wr1 : wr3;
+          const roll = Math.random();
+          carrierEndZ = passTargetPlayer.relZ * 0.85;
+          ballArcPeak = 11.5;
+          if (roll < 0.36) {
+            yardsGained = Math.floor(22 + Math.random() * 22);
+          } else if (roll < 0.88) {
+            outcomeType = "incomplete";
+            yardsGained = 0;
+          } else {
+            outcomeType = "interception";
+            yardsGained = 25;
+          }
+        } else if (type === "fg" || type === "xp") {
+          // Real NFL Field Goal distance = yards to goal line + 10 yds endzone + 7 yds snap = (50 - startX) + 17
+          const kickDist = Math.round(50 - startX + 17);
+          const makeProb =
+            type === "xp"
+              ? 0.95
+              : kickDist <= 42
+                ? 0.9
+                : kickDist <= 54
+                  ? 0.72
+                  : kickDist <= 62
+                    ? 0.38
+                    : 0.08;
+          outcomeType = Math.random() < makeProb ? "fg_good" : "fg_miss";
+          ballArcPeak = 13.5;
+          carrierEndZ = outcomeType === "fg_good" ? 0 : 5.8; // Wide right on miss!
+        } else if (type === "punt") {
+          outcomeType = "punt";
+          yardsGained = Math.min(44, 50 - startX - 5);
+          ballArcPeak = 16;
+        } else if (type === "two_pt") {
+          // 2-Point play from OPP 2 (X = 48): ~48% success rate
+          const success = Math.random() < 0.5;
+          yardsGained = success ? 4 : 0;
+          passTargetPlayer = tePlayer;
+          carrierEndZ = 3;
+        }
+
+        // Clamp Touchdowns to Endzone depth
+        const rawDestX = Math.min(54, startX + yardsGained);
+
+        // Assign player target positions for lively 3D animation
+        players.forEach((p) => {
+          p.startPos.copy(p.group.position);
+          p.targetPos.copy(p.startPos);
+
+          if (type === "fg" || type === "xp" || type === "punt") {
+            if (p.roleKey === "OL" || p.roleKey === "DL") {
+              p.targetPos.x = startX + (p.side === "Offense" ? -0.3 : 0.3);
+            }
+            return;
+          }
+
+          if (p.roleKey === "OL") {
+            p.targetPos.x = startX + (type === "run" ? 1.2 : -1.2);
+          } else if (p.roleKey === "DL") {
+            p.targetPos.x = startX + (type === "run" ? 0.8 : -1.8);
+          } else if (p.roleKey === "QB") {
+            p.targetPos.x = startX - 6.5;
+          } else if (p.roleKey === "RB") {
+            if (type === "run") {
+              p.targetPos.set(rawDestX, 0, carrierEndZ);
+            } else {
+              p.targetPos.set(startX + 2, 0, 5);
+            }
+          } else if (p.roleKey === "WR" || p.roleKey === "TE") {
+            const depth = type === "deep_pass" ? 26 : 8;
+            p.targetPos.set(Math.min(55, startX + depth), 0, p.relZ * 0.85);
+          } else if (p.roleKey === "CB" || p.roleKey === "S") {
+            const depth = type === "deep_pass" ? 25 : 8;
+            p.targetPos.set(Math.min(55, startX + depth), 0, p.relZ * 0.82);
+          } else if (p.roleKey === "LB") {
+            p.targetPos.set(
+              startX + (type === "run" ? 2.5 : 6.5),
+              0,
+              p.relZ * 0.6,
+            );
+          }
+        });
+
+        activePlayAnim = {
+          type,
+          outcomeType,
+          startX,
+          yardsGained,
+          rawDestX,
+          carrierEndZ,
+          ballArcPeak,
+          passTargetPlayer,
+          startTime: performance.now(),
+          duration:
+            type === "deep_pass" || type === "fg" || type === "punt"
+              ? 2100
+              : 1550,
+        };
+      }
+
+      function finishPlayResolution(anim) {
+        gameState.animating = false;
+        setPlayButtonsDisabled(false);
+
+        const { type, outcomeType, startX, yardsGained } = anim;
+
+        // 1. Handle Post-Touchdown Conversion Attempts (1-pt XP or 2-pt Try)
+        if (gameState.awaitingConversion) {
+          gameState.awaitingConversion = false;
+          if (type === "xp") {
+            if (outcomeType === "fg_good") {
+              gameState.scoreYou += 1;
+              showBanner(
+                "EXTRA POINT GOOD! (+1)",
+                "Ball split the uprights! Starting a new drive.",
+              );
+              gameState.coachMessage =
+                "Extra Point GOOD (+1 pt)! That brings a standard Touchdown drive to 7 points total. Starting your next possession at your Own 25!";
+            } else {
+              showBanner(
+                "EXTRA POINT MISSED!",
+                "Wide right! Score stays at +6.",
+              );
+              gameState.coachMessage =
+                "Missed Extra Point! Even in the NFL, the 33-yard kick is missed about 5% of the time.";
+            }
+          } else if (type === "two_pt") {
+            if (yardsGained >= 2) {
+              gameState.scoreYou += 2;
+              showBanner(
+                "2-POINT CONVERSION! (+2)",
+                "You crossed the goal line! +8 total points on the drive!",
+              );
+              gameState.coachMessage =
+                "HUGE 2-Point Conversion (+2 pts)! Coaches use this riskier play when trailing by 2 or 8 points late in a game.";
+            } else {
+              showBanner("2-PT TRY STOPPED!", "Defense held at the goal line!");
+              gameState.coachMessage =
+                "Stopped short! Going for 2 doubles the bonus points, but fails roughly half the time.";
+            }
+          }
+          startFreshDrive(-25);
+          renderPanel();
+          return;
+        }
+
+        // 2. Handle Field Goal Attempt (3 Points)
+        if (type === "fg") {
+          const kickDist = Math.round(50 - startX + 17);
+          if (outcomeType === "fg_good") {
+            gameState.scoreYou += 3;
+            showBanner(
+              `FIELD GOAL GOOD! (+3 PTS)`,
+              `${kickDist}-yard kick sailed right between the yellow uprights!`,
+            );
+            gameState.coachMessage = `BANG! Good from ${kickDist} yards (+3 points)! When a drive stalls on 4th down within ~40 yards of the end zone, kicking 3 points is way smarter than risking 0.`;
+          } else {
+            showBanner(
+              `NO GOOD (${kickDist} YDS)`,
+              "Missed wide right! Opponent takes over.",
+            );
+            gameState.coachMessage = `Missed the ${kickDist}-yard Field Goal! Whenever you miss a Field Goal, the opponent gets the ball right where you kicked from. Starting a fresh practice drive!`;
+          }
+          startFreshDrive(-25);
+          renderPanel();
+          return;
+        }
+
+        // 3. Handle Punt
+        if (type === "punt") {
+          const pinnedAt = Math.max(5, 50 - (startX + yardsGained));
+          showBanner(
+            "BOOM! 42-YD PUNT",
+            `Opponent pinned back at their own ${Math.round(pinnedAt)}-yard line!`,
+          );
+          gameState.coachMessage = `Smart Punt! Instead of risking a failed 4th down in your own territory, you kicked the ball deep so the opponent has to travel ~${Math.round(100 - pinnedAt)} yards. Starting a new drive for you!`;
+          startFreshDrive(-25);
+          renderPanel();
+          return;
+        }
+
+        // 4. Handle Interception (Turnover!)
+        if (outcomeType === "interception") {
+          gameState.scoreOpp += 3;
+          showBanner(
+            "INTERCEPTED!",
+            "Turnover! Defense caught your deep pass!",
+          );
+          gameState.coachMessage =
+            "INTERCEPTION! Throwing deep into double-coverage is risky—if a defender catches the pass, their team immediately steals possession (+3 simulated pts for Defense). Try a new drive!";
+          startFreshDrive(-25);
+          renderPanel();
+          return;
+        }
+
+        // 5. Handle Incomplete Pass
+        if (outcomeType === "incomplete") {
+          showBanner("INCOMPLETE PASS", "0 yards gained — costs 1 down.");
+          advanceDownAndDistance(
+            0,
+            "Incomplete pass! When a thrown ball hits the ground, the play ends with 0 yards gained, the game clock stops, and you use up one down.",
+          );
+          renderPanel();
+          return;
+        }
+
+        // 6. Normal Run or Completed Pass
+        advanceDownAndDistance(yardsGained);
+        renderPanel();
+      }
+
+      function advanceDownAndDistance(yardsGained, customNote = null) {
+        gameState.losX += yardsGained;
+
+        // Check TOUCHDOWN! (Ball reaches X >= 50, Opponent's End Zone!)
+        if (gameState.losX >= 50) {
+          gameState.scoreYou += 6;
+          gameState.awaitingConversion = true;
+          gameState.losX = 35; // Spot for XP visual, or 48 for 2-pt
+          showBanner(
+            "TOUCHDOWN! (+6 PTS)",
+            "Now choose: Kick 1-Pt Extra Point or Go for 2 Points!",
+            3600,
+          );
+          gameState.coachMessage =
+            "TOUCHDOWN (+6 Points)! After every Touchdown, you get ONE bonus play: kick a safe 1-point Extra Point, or run one play from the 2-yard line for 2 points!";
+          resetFormationToLOS();
+          if (gameState.activeTab === "downs") applyCameraPreset("endzone");
+          return;
+        }
+
+        // Check Safety (Tackled in own End Zone X <= -50)
+        if (gameState.losX <= -50) {
+          gameState.scoreOpp += 2;
+          showBanner("SAFETY! (+2 DEFENSE)", "Tackled in your own End Zone!");
+          gameState.coachMessage =
+            "SAFETY! Getting tackled inside your own End Zone gives the Defense 2 points AND the ball!";
+          startFreshDrive(-25);
+          return;
+        }
+
+        // Check FIRST DOWN! (Reached or passed the Yellow Line!)
+        if (gameState.losX >= gameState.firstDownX) {
+          gameState.down = 1;
+          gameState.firstDownX = Math.min(50, gameState.losX + 10);
+          showBanner(
+            "1ST DOWN!",
+            `Gained ${yardsGained} yds! Fresh set of 4 downs!`,
+            2000,
+          );
+          gameState.coachMessage = `FIRST DOWN (+${yardsGained} yds)! Because you crossed the Yellow Line, the counter resets to 1st Down with a brand-new 10-yard target! This is how offenses march down the field.`;
+        } else {
+          // Did not reach yellow line -> increment down
+          gameState.down += 1;
+
+          if (gameState.down > 4) {
+            // Turnover on Downs!
+            gameState.scoreOpp += 3;
+            showBanner(
+              "TURNOVER ON DOWNS!",
+              "Used all 4 downs without reaching the Yellow Line!",
+            );
+            gameState.coachMessage = `TURNOVER ON DOWNS! You failed to reach the Yellow Line on 4th down, so the opponent takes over right here! That is why teams almost always Punt or Kick a Field Goal on 4th down.`;
+            startFreshDrive(-25);
+            return;
+          }
+
+          const needed =
+            gameState.firstDownX >= 50
+              ? "the End Zone"
+              : `${Math.round(gameState.firstDownX - gameState.losX)} more yards`;
+          if (customNote) {
+            gameState.coachMessage = `${customNote} Now it is ${formatOrdinal(gameState.down)} down—you need ${needed}.`;
+          } else if (gameState.down === 4) {
+            const fgRange = gameState.losX >= 12;
+            gameState.coachMessage = `ALERT — IT'S 4TH DOWN! Gain ${needed} or lose the ball right here! ${
+              fgRange
+                ? "You are close enough to KICK A FIELD GOAL for 3 points!"
+                : "You are far from the end zone—coaches usually PUNT here to pin the opponent deep!"
+            }`;
+          } else {
+            const sign =
+              yardsGained >= 0 ? `+${yardsGained}` : `${yardsGained}`;
+            gameState.coachMessage = `Play gained ${sign} yards. It is now ${formatOrdinal(gameState.down)} down and you need ${needed} to cross the Yellow Line.`;
+          }
+        }
+
+        resetFormationToLOS();
+        if (gameState.activeTab === "downs") {
+          flyCameraTo(
+            [gameState.losX - 6, 22, 38],
+            [gameState.losX + 6, 0, 0],
+            650,
+          );
+        }
+      }
+
+      function startFreshDrive(startX = -25) {
+        gameState.losX = startX;
+        gameState.firstDownX = startX + 10;
+        gameState.down = 1;
+        gameState.awaitingConversion = false;
+        resetFormationToLOS();
+        if (gameState.activeTab === "downs") {
+          flyCameraTo(
+            [gameState.losX - 6, 22, 38],
+            [gameState.losX + 6, 0, 0],
+            800,
+          );
+        }
+      }
+
+      // =========================================================================
+      // 9. UI MODULE RENDERING & INTERACTIVITY
+      // =========================================================================
+      const sidePanel = document.getElementById("side-panel");
+      const playControls = document.getElementById("play-controls");
+
+      function setZoneHighlight(
+        visible,
+        x = 0,
+        width = 10,
+        colorHex = 0xfacc15,
+      ) {
+        zoneHighlight.material.opacity = visible ? 0.28 : 0;
+        zoneHighlight.material.color.setHex(colorHex);
+        zoneHighlight.scale.x = width / 10;
+        zoneHighlight.position.x = x;
+      }
+
+      function selectPositionGroup(groupKey) {
+        gameState.selectedPosGroup = groupKey;
+        players.forEach((p) => {
+          const isMatch = p.roleKey === groupKey;
+          p.body.material = isMatch ? highlightBodyMat : p.baseMat;
+          p.ring.material.opacity = isMatch ? 0.95 : 0;
+          p.tag.classList.toggle("highlighted", isMatch);
+        });
+        if (gameState.activeTab === "players") {
+          renderPanel();
+          const sample = players.find((p) => p.roleKey === groupKey);
+          if (sample) {
+            flyCameraTo(
+              [sample.group.position.x - 10, 11, sample.group.position.z + 14],
+              [sample.group.position.x, 1, sample.group.position.z],
+              650,
+            );
+          }
+        }
+      }
+
+      function clearPlayerHighlights() {
+        players.forEach((p) => {
+          p.body.material = p.baseMat;
+          p.ring.material.opacity = 0;
+          p.tag.style.display = "none";
+        });
+      }
+
+      function renderPlayBar() {
+        if (gameState.activeTab !== "downs") {
+          playControls.classList.remove("visible");
+          return;
+        }
+        playControls.classList.add("visible");
+
+        if (gameState.awaitingConversion) {
+          playControls.innerHTML = `
+          <button class="play-btn special" data-play="xp">Kick Extra Point<span>+1 Pt (95% Safe)</span></button>
+          <button class="play-btn special" data-play="two_pt">Go For 2 Points<span>+2 Pts (50% Risky)</span></button>
+        `;
+        } else {
+          const kickDist = Math.round(50 - gameState.losX + 17);
+          playControls.innerHTML = `
+          <button class="play-btn" data-play="run">Inside Run<span>Safe: 3–7 yds</span></button>
+          <button class="play-btn" data-play="short_pass">Short Pass<span>Med: 5–12 yds</span></button>
+          <button class="play-btn" data-play="deep_pass">Deep Bomb<span>High Risk: 22–44 yds</span></button>
+          <button class="play-btn special" data-play="fg">Field Goal (3 Pts)<span>${kickDist}-yd Kick</span></button>
+          <button class="play-btn special" data-play="punt">Punt Away<span>4th Down Safety</span></button>
+        `;
+        }
+
+        playControls.querySelectorAll(".play-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const playType = btn.dataset.play;
+            if (playType === "two_pt") {
+              gameState.losX = 48;
+              resetFormationToLOS();
+              gameState.awaitingConversion = true;
+            }
+            runSimulatedPlay(playType);
+          });
+        });
+      }
+
+      function renderPanel() {
+        const tab = gameState.activeTab;
+        renderPlayBar();
+
+        // MODULE 1: THE FIELD & SCORING
+        if (tab === "field") {
+          clearPlayerHighlights();
+          sidePanel.innerHTML = `
+          <span class="module-tag">Module 1 of 4</span>
+          <h2 class="panel-title">The Gridiron & How Teams Score</h2>
+          <p class="panel-desc">
+            American Football is a game of <strong>territory</strong>. Two teams battle across a <strong>100-yard grass field</strong> flanked by two 10-yard <strong>End Zones</strong>. Click any card below to inspect it in 3D:
+          </p>
+          <div class="info-grid">
+            <div class="info-card" data-tour="touchdown">
+              <div class="info-card-header">
+                <span class="info-card-title">Touchdown (End Zone)</span>
+                <span class="badge badge-gold">6 POINTS</span>
+              </div>
+              <p>Carry the ball into the opponent's Red End Zone or catch a pass while both feet land inside it.</p>
+            </div>
+
+            <div class="info-card" data-tour="conversion">
+              <div class="info-card-header">
+                <span class="info-card-title">Extra Point vs. 2-Pt Try</span>
+                <span class="badge badge-green">+1 OR +2 PTS</span>
+              </div>
+              <p>Right after a Touchdown, choose: kick through the yellow uprights (+1 pt) or run one play from the 2-yard line (+2 pts). That's why Touchdowns usually equal <strong>7 points</strong>!</p>
+            </div>
+
+            <div class="info-card" data-tour="fieldgoal">
+              <div class="info-card-header">
+                <span class="info-card-title">Field Goal (Yellow Uprights)</span>
+                <span class="badge badge-gold">3 POINTS</span>
+              </div>
+              <p>If your offense gets close (~35 yards out) but gets stopped, kick the ball over the yellow crossbar for 3 points.</p>
+            </div>
+
+            <div class="info-card" data-tour="redzone">
+              <div class="info-card-header">
+                <span class="info-card-title">The "Red Zone" (Inside the 20)</span>
+                <span class="badge badge-red">20 YD SCORING ZONE</span>
+              </div>
+              <p>The final 20 yards before the opponent's End Zone. Space gets super cramped here, making Touchdowns tough!</p>
+            </div>
+
+            <div class="info-card" data-tour="safety">
+              <div class="info-card-header">
+                <span class="info-card-title">Safety (Rare Defensive Score)</span>
+                <span class="badge badge-blue">2 POINTS</span>
+              </div>
+              <p>If the Defense tackles the Offense inside the Offense's <em>own</em> Blue End Zone, the Defense gets 2 points AND the ball!</p>
+            </div>
+          </div>
+          <p class="hint-footer">Tip: Drag to rotate 3D camera • Scroll to zoom</p>
+        `;
+
+          sidePanel.querySelectorAll(".info-card").forEach((card) => {
+            card.addEventListener("click", () => {
+              sidePanel
+                .querySelectorAll(".info-card")
+                .forEach((c) => c.classList.remove("selected"));
+              card.classList.add("selected");
+              const tour = card.dataset.tour;
+              if (tour === "touchdown") {
+                setZoneHighlight(true, 55, 10, 0xef4444);
+                flyCameraTo([32, 22, 30], [55, 0, 0]);
+              } else if (tour === "conversion") {
+                setZoneHighlight(true, 49, 2, 0x22c55e);
+                flyCameraTo([36, 12, 16], [56, 4, 0]);
+              } else if (tour === "fieldgoal") {
+                setZoneHighlight(false);
+                flyCameraTo([38, 10, 12], [60, 7, 0]);
+              } else if (tour === "redzone") {
+                setZoneHighlight(true, 40, 20, 0xfacc15);
+                flyCameraTo([28, 32, 38], [42, 0, 0]);
+              } else if (tour === "safety") {
+                setZoneHighlight(true, -55, 10, 0x3b82f6);
+                flyCameraTo([-32, 22, 30], [-55, 0, 0]);
+              }
+            });
+          });
+        }
+
+        // MODULE 2: THE 22 PLAYERS
+        else if (tab === "players") {
+          setZoneHighlight(false);
+          players.forEach((p) => (p.tag.style.display = "block"));
+          const pData = POSITIONS_DATA[gameState.selectedPosGroup];
+
+          const pillsHtml = Object.keys(POSITIONS_DATA)
+            .map((key) => {
+              const sideCls =
+                POSITIONS_DATA[key].side === "Offense" ? "offense" : "defense";
+              const actCls = key === gameState.selectedPosGroup ? "active" : "";
+              return `<button class="pos-pill ${sideCls} ${actCls}" data-pos="${key}">${key}</button>`;
+            })
+            .join("");
+
+          sidePanel.innerHTML = `
+          <span class="module-tag">Module 2 of 4</span>
+          <h2 class="panel-title">The 22 Specialists (11 vs. 11)</h2>
+          <p class="panel-desc">
+            Unlike soccer or basketball, almost nobody plays both Offense and Defense. Every player has a specialized body type and job. <strong>Click a position or 3D player:</strong>
+          </p>
+          <div class="position-pills">${pillsHtml}</div>
+          <div class="info-card selected" style="cursor:default;">
+            <div class="info-card-header">
+              <span class="info-card-title">${pData.name}</span>
+              <span class="badge ${pData.side === "Offense" ? "badge-blue" : "badge-red"}">${pData.side.toUpperCase()}</span>
+            </div>
+            <p style="color:#fde047; font-weight:700; margin:4px 0;">${pData.summary}</p>
+            <p>${pData.details}</p>
+          </div>
+          <p class="hint-footer">Click any 3D helmet/jersey on the field to inspect!</p>
+        `;
+
+          sidePanel.querySelectorAll(".pos-pill").forEach((btn) => {
+            btn.addEventListener("click", () =>
+              selectPositionGroup(btn.dataset.pos),
+            );
+          });
+        }
+
+        // MODULE 3: DOWNS & LIVE PLAY SIMULATOR
+        else if (tab === "downs") {
+          setZoneHighlight(false);
+          clearPlayerHighlights();
+          sidePanel.innerHTML = `
+          <span class="module-tag">Module 3 of 4 • Interactive Sim</span>
+          <h2 class="panel-title">The Secret of Football: 4 Downs</h2>
+          <div class="coach-box">
+            <strong>Coach's Live Headset</strong>
+            ${gameState.coachMessage}
+          </div>
+          <div class="info-grid">
+            <div class="info-card" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">Blue Line = Line of Scrimmage</span>
+                <span class="badge badge-blue">START</span>
+              </div>
+              <p>Where the ball is spotted right now. Neither team can cross it until the ball is snapped.</p>
+            </div>
+            <div class="info-card" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">Yellow Line = 1st Down Target</span>
+                <span class="badge badge-gold">+10 YARDS</span>
+              </div>
+              <p>You have <strong>4 plays ("downs")</strong> to reach this Yellow Line. Cross it, and you earn a brand-new <strong>1st & 10</strong>!</p>
+            </div>
+          </div>
+          <button class="tab-btn" id="jump-redzone-btn" style="width:100%; margin-top:12px; background:rgba(250,204,21,0.16); color:#fde047; border-color:rgba(250,204,21,0.4);">
+            Practice in Red Zone (1st & Goal at OPP 8)
+          </button>
+        `;
+
+          document
+            .getElementById("jump-redzone-btn")
+            .addEventListener("click", () => {
+              gameState.losX = 42; // OPP 8 yard line
+              gameState.firstDownX = 50; // Goal line!
+              gameState.down = 1;
+              gameState.awaitingConversion = false;
+              gameState.coachMessage =
+                'Notice the Scorebug now says "1ST & GOAL"! Because the End Zone is only 8 yards away, there is no Yellow 10-yard line—your target IS the Touchdown!';
+              resetFormationToLOS();
+              flyCameraTo([28, 18, 28], [48, 0, 0]);
+              renderPanel();
+            });
+        }
+
+        // MODULE 4: STRATEGY, CLOCK & YELLOW FLAGS
+        else if (tab === "rules") {
+          setZoneHighlight(false);
+          clearPlayerHighlights();
+          sidePanel.innerHTML = `
+          <span class="module-tag">Module 4 of 4</span>
+          <h2 class="panel-title">The Chess Match & Yellow Flags</h2>
+          <p class="panel-desc">
+            Newcomers often ask: <em>"Why do they stop for 35 seconds after a 5-second play?"</em> Because football is <strong>high-speed chess</strong>—both coaches swap personnel and call secret formations before every snap!
+          </p>
+          <button class="tab-btn active" id="throw-flag-btn" style="width:100%; margin-bottom:12px; background:#eab308; color:#0f172a; font-weight:800;">
+            Throw a Yellow Penalty Flag on the Field!
+          </button>
+          <div class="info-grid">
+            <div class="info-card" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">Offensive Holding</span>
+                <span class="badge badge-gold">-10 YARDS</span>
+              </div>
+              <p>Linemen can push and block with open hands inside the shoulders, but <strong>grabbing/tackling</strong> a defender trying to sack the QB draws a 10-yard penalty.</p>
+            </div>
+            <div class="info-card" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">False Start vs. Offsides</span>
+                <span class="badge badge-gold">5 YARDS</span>
+              </div>
+              <p><strong>False Start:</strong> An offensive player flinches before the snap (-5 yds). <strong>Offsides:</strong> A defender jumps across the Blue Line early (+5 yds for Offense).</p>
+            </div>
+            <div class="info-card" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">Pass Interference (DPI)</span>
+                <span class="badge badge-red">SPOT FOUL</span>
+              </div>
+              <p>While a pass is in the air, defenders cannot shove or grab the receiver before the ball arrives—otherwise the Offense gets the ball right at that spot!</p>
+            </div>
+            <div class="info-card" style="cursor:default;">
+              <div class="info-card-header">
+                <span class="info-card-title">4 Quarters × 15 Minutes</span>
+                <span class="badge badge-blue">CLOCK STRATEGY</span>
+              </div>
+              <p>Running plays keep the clock ticking (great when winning late!). Incomplete passes & running out-of-bounds <strong>stop the clock</strong> (essential for comebacks!).</p>
+            </div>
+          </div>
+        `;
+
+          document
+            .getElementById("throw-flag-btn")
+            .addEventListener("click", () => {
+              penaltyFlag.visible = true;
+              penaltyFlag.position.set(gameState.losX + 2, 12, 3);
+              showBanner(
+                "FLAG ON THE PLAY!",
+                "Referees toss a weighted yellow cloth when a foul occurs—play finishes first!",
+                2800,
+              );
+              flyCameraTo(
+                [gameState.losX - 8, 12, 18],
+                [gameState.losX + 2, 1, 2],
+                600,
+              );
+            });
+        }
+      }
+
+      // Top Navigation Switching
+      document.querySelectorAll(".tab-btn[data-tab]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab-btn[data-tab]")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          gameState.activeTab = btn.dataset.tab;
+          penaltyFlag.visible = false;
+
+          if (gameState.activeTab === "field") {
+            flyCameraTo([0, 62, 68], [0, 0, 0]);
+          } else if (gameState.activeTab === "players") {
+            selectPositionGroup(gameState.selectedPosGroup);
+          } else if (gameState.activeTab === "downs") {
+            applyCameraPreset("broadcast");
+          } else if (gameState.activeTab === "rules") {
+            flyCameraTo(
+              [gameState.losX - 10, 16, 24],
+              [gameState.losX + 2, 0, 0],
+            );
+          }
+          renderPanel();
+        });
+      });
+
+      // Raycasting: Click 3D Player to Inspect Role!
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+      let pointerDownPos = { x: 0, y: 0 };
+
+      renderer.domElement.addEventListener("pointerdown", (e) => {
+        pointerDownPos = { x: e.clientX, y: e.clientY };
+      });
+
+      renderer.domElement.addEventListener("pointerup", (e) => {
+        if (
+          Math.hypot(
+            e.clientX - pointerDownPos.x,
+            e.clientY - pointerDownPos.y,
+          ) > 5
+        )
+          return;
+        pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+        pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(playerMeshes);
+        if (hits.length > 0 && hits[0].object.userData.player) {
+          const roleKey = hits[0].object.userData.player.roleKey;
+          if (gameState.activeTab !== "players") {
+            document.querySelector('.tab-btn[data-tab="players"]').click();
+          }
+          selectPositionGroup(roleKey);
+        }
+      });
+
+      // =========================================================================
+      // 10. 2D PROJECTION & MAIN ANIMATION LOOP
+      // =========================================================================
+      function projectToScreen(vec3, el) {
+        const projected = vec3.clone().project(camera);
+        if (projected.z > 1) {
+          el.style.opacity = "0";
+          return;
+        }
+        const x = (projected.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-projected.y * 0.5 + 0.5) * window.innerHeight;
+        el.style.opacity = "1";
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+      }
+
+      function animate(now) {
+        requestAnimationFrame(animate);
+
+        // Smooth Camera Flight
+        if (camTween) {
+          const t = Math.min(1, (now - camTween.startTime) / camTween.duration);
+          const ease = 1 - Math.pow(1 - t, 3);
+          camera.position.lerpVectors(camTween.startPos, camTween.endPos, ease);
+          controls.target.lerpVectors(
+            camTween.startTarget,
+            camTween.endTarget,
+            ease,
+          );
+          if (t >= 1) camTween = null;
+        }
+
+        // Live Play Animation Interpolation
+        if (activePlayAnim) {
+          const p = Math.min(
+            1,
+            (now - activePlayAnim.startTime) / activePlayAnim.duration,
+          );
+          const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+
+          players.forEach((pl) => {
+            pl.group.position.lerpVectors(pl.startPos, pl.targetPos, ease);
+            // Subtle running bob
+            pl.group.position.y =
+              Math.abs(Math.sin(now * 0.022 + pl.relZ)) *
+              0.25 *
+              (1 - Math.abs(2 * p - 1));
+          });
+
+          // Football Physics Trajectory
+          const {
+            type,
+            startX,
+            rawDestX,
+            carrierEndZ,
+            ballArcPeak,
+            passTargetPlayer,
+          } = activePlayAnim;
+
+          if (type === "run") {
+            if (p < 0.22) {
+              // Snap to QB & handoff to RB
+              ballGroup.position.lerpVectors(
+                new THREE.Vector3(startX - 0.5, 0.4, 0),
+                rbPlayer.group.position
+                  .clone()
+                  .add(new THREE.Vector3(0, 1.1, 0)),
+                p / 0.22,
+              );
+            } else {
+              ballGroup.position
+                .copy(rbPlayer.group.position)
+                .add(new THREE.Vector3(0.3, 1.1, 0));
+            }
+          } else if (
+            type === "short_pass" ||
+            type === "deep_pass" ||
+            type === "two_pt"
+          ) {
+            if (p < 0.28) {
+              // Snap & QB dropback
+              ballGroup.position
+                .copy(qbPlayer.group.position)
+                .add(new THREE.Vector3(0.3, 1.45, 0));
+            } else {
+              // Parabolic pass flight in the air!
+              const airT = (p - 0.28) / 0.72;
+              const qbPos = qbPlayer.group.position;
+              const endX =
+                activePlayAnim.outcomeType === "incomplete"
+                  ? rawDestX + 9
+                  : rawDestX;
+              const bx = THREE.MathUtils.lerp(qbPos.x, endX, airT);
+              const bz = THREE.MathUtils.lerp(0, carrierEndZ, airT);
+              const endY =
+                activePlayAnim.outcomeType === "incomplete" ? 0.35 : 1.5;
+              const by =
+                THREE.MathUtils.lerp(1.6, endY, airT) +
+                Math.sin(airT * Math.PI) * ballArcPeak;
+              ballGroup.position.set(bx, by, bz);
+              ballGroup.rotation.x += 0.35; // Tight spiral!
+            }
+          } else if (type === "fg" || type === "xp") {
+            const kickStart = new THREE.Vector3(startX - 7, 0.4, 0);
+            const kickEnd = new THREE.Vector3(63, 6.5, carrierEndZ);
+            const bx = THREE.MathUtils.lerp(kickStart.x, kickEnd.x, p);
+            const bz = THREE.MathUtils.lerp(0, kickEnd.z, p);
+            const by =
+              THREE.MathUtils.lerp(0.4, kickEnd.y, p) +
+              Math.sin(p * Math.PI) * ballArcPeak;
+            ballGroup.position.set(bx, by, bz);
+            ballGroup.rotation.z += 0.28; // End-over-end kick spin
+          } else if (type === "punt") {
+            const puntStart = new THREE.Vector3(startX - 10, 1.0, 0);
+            const puntEnd = new THREE.Vector3(rawDestX, 0.4, 2);
+            const bx = THREE.MathUtils.lerp(puntStart.x, puntEnd.x, p);
+            const bz = THREE.MathUtils.lerp(0, puntEnd.z, p);
+            const by =
+              THREE.MathUtils.lerp(1.0, 0.4, p) +
+              Math.sin(p * Math.PI) * ballArcPeak;
+            ballGroup.position.set(bx, by, bz);
+            ballGroup.rotation.x += 0.25;
+          }
+
+          if (p >= 1) {
+            players.forEach((pl) => (pl.group.position.y = 0));
+            const finished = activePlayAnim;
+            activePlayAnim = null;
+            finishPlayResolution(finished);
+          }
+        }
+
+        // Drop penalty flag gravity
+        if (penaltyFlag.visible && penaltyFlag.position.y > 0.48) {
+          penaltyFlag.position.y = Math.max(
+            0.48,
+            penaltyFlag.position.y - 0.38,
+          );
+          penaltyFlag.rotation.z += 0.15;
+        }
+
+        controls.update();
+
+        // Update Floating 3D Labels
+        projectToScreen(
+          new THREE.Vector3(losLine.position.x, 0.6, -24),
+          losLabelEl,
+        );
+        if (firstDownLine.visible) {
+          fdLabelEl.style.display = "block";
+          projectToScreen(
+            new THREE.Vector3(firstDownLine.position.x, 0.6, 24),
+            fdLabelEl,
+          );
+        } else {
+          fdLabelEl.style.display = "none";
+        }
+
+        if (gameState.activeTab === "players") {
+          players.forEach((p) => {
+            projectToScreen(
+              p.group.position.clone().add(new THREE.Vector3(0, 2.7, 0)),
+              p.tag,
+            );
+          });
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      // Initialize UI & Launch Loop
+      renderPanel();
+      flyCameraTo([0, 62, 68], [0, 0, 0], 1100);
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
